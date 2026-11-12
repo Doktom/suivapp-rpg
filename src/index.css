@@ -1,0 +1,227 @@
+@import 'tailwindcss';
+
+/* "Taverne en pagaille": comic-book look. Parchment ground, thick ink outlines, hard offset shadows, sticker colors. */
+@theme {
+  --color-ground: #fff3d9;
+  --color-surface: #ffffff;
+  --color-ink: #2b1b3d;
+  --color-muted: #5f4f78;
+  --color-line: #e6d5b0;
+  --color-track: #f1e3c4;
+  --color-chip: #fbe6b4;
+  --color-accent: #6b3fe0;
+  --color-onaccent: #ffffff;
+  --color-warn: #c2410c;
+  /* Outlines and hard shadows. */
+  --color-outline: #2b1b3d;
+  /* Sticker colors (fills behind dark text). */
+  --color-gold: #ffc93c;
+  --color-coral: #ff8a5c;
+  --color-teal: #3fd0bd;
+  --color-pink: #ff8fc0;
+  --color-sky: #7cc4ff;
+  /* Text that always sits on a sticker color. */
+  --color-onsticker: #2b1b3d;
+  --font-sans: Nunito, system-ui, sans-serif;
+  --font-display: 'Lilita One', Nunito, system-ui, sans-serif;
+}
+
+/* Dark theme: follows the device unless a theme is chosen in the settings. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-ground: #1b1230;
+    --color-surface: #2c2050;
+    --color-ink: #fbf1dc;
+    --color-muted: #c3b5e0;
+    --color-line: #45366e;
+    --color-track: #3d2e66;
+    --color-chip: #40306c;
+    --color-accent: #c4b0ff;
+    --color-onaccent: #1b1230;
+    --color-warn: #ffb27a;
+    --color-outline: #0b0616;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-ground: #1b1230;
+  --color-surface: #2c2050;
+  --color-ink: #fbf1dc;
+  --color-muted: #c3b5e0;
+  --color-line: #45366e;
+  --color-track: #3d2e66;
+  --color-chip: #40306c;
+  --color-accent: #c4b0ff;
+  --color-onaccent: #1b1230;
+  --color-warn: #ffb27a;
+  --color-outline: #0b0616;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-ground);
+  /* Faint dotted paper grain. */
+  background-image: radial-gradient(color-mix(in srgb, var(--color-outline) 9%, transparent) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Lilita One has a single weight: never let a utility fake a bolder one. */
+.font-display {
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+button:not(:disabled),
+a {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Comic building blocks ---- */
+
+/* In the components layer so that utilities (bg-*, p-*) can still override them. */
+@layer components {
+  /* A panel: outlined, rounded, with a hard offset shadow. */
+  .card {
+    background: var(--color-surface);
+    border: 2.5px solid var(--color-outline);
+    border-radius: 16px;
+    box-shadow: 3px 3px 0 var(--color-outline);
+  }
+
+  /* Anything pressable that should feel like a sticker button. */
+  .pressable {
+    border: 2.5px solid var(--color-outline);
+    box-shadow: 3px 3px 0 var(--color-outline);
+    transition: transform 80ms ease, box-shadow 80ms ease;
+  }
+  .pressable:not(:disabled):active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--color-outline);
+  }
+}
+
+/* Segmented control: the pressed option becomes a gold pill. */
+.seg {
+  background: var(--color-surface);
+  border: 2.5px solid var(--color-outline);
+  border-radius: 999px;
+  padding: 3px;
+}
+.seg > button {
+  border-radius: 999px;
+  background: transparent;
+  font-weight: 800;
+}
+.seg > button[aria-pressed='true'] {
+  background: var(--color-gold);
+  color: var(--color-onsticker);
+}
+
+@layer components {
+  /* Small sticker label (XP gains, counters). */
+  .sticker {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    border: 2px solid var(--color-outline);
+    border-radius: 999px;
+    background: var(--color-gold);
+    color: var(--color-onsticker);
+    padding: 1px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The tavern keeper's speech bubble. */
+  .bubble {
+    background: #ffe08a;
+    color: var(--color-onsticker);
+    border: 2.5px solid var(--color-outline);
+    border-radius: 16px 16px 16px 4px;
+    padding: 8px 12px;
+    font-weight: 700;
+  }
+}
+
+/* Striped gold fill of the XP bar. */
+.xp-stripes {
+  background-image: repeating-linear-gradient(-45deg, #ffc93c 0 12px, #ffad1f 12px 24px);
+  background-size: 34px 100%;
+  animation: xp-slide 1.2s linear infinite;
+}
+
+dialog {
+  border: 2.5px solid var(--color-outline);
+  box-shadow: 6px 6px 0 var(--color-outline);
+}
+
+/* ---- Animations ---- */
+
+@keyframes xp-slide {
+  to { background-position: 34px 0; }
+}
+@keyframes pop {
+  0% { transform: scale(0.6) rotate(0deg); }
+  60% { transform: scale(1.25) rotate(-10deg); }
+  100% { transform: scale(1) rotate(-6deg); }
+}
+@keyframes toast-rise {
+  0% { transform: translateY(24px) scale(0.7); opacity: 0; }
+  15% { transform: translateY(0) scale(1.08); opacity: 1; }
+  25% { transform: translateY(0) scale(1); }
+  80% { transform: translateY(-10px); opacity: 1; }
+  100% { transform: translateY(-34px); opacity: 0; }
+}
+@keyframes drop-in {
+  0% { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+  70% { transform: scale(1.06) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(-20vh) rotate(0deg); }
+  100% { transform: translateY(110vh) rotate(720deg); }
+}
+@keyframes bob {
+  50% { transform: translateY(-3px); }
+}
+@keyframes wiggle {
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+
+.anim-pop { animation: pop 320ms cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.anim-toast { animation: toast-rise 2.2s ease-out both; }
+.anim-drop { animation: drop-in 420ms cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.anim-bob { animation: bob 2.4s ease-in-out infinite; }
+.anim-wiggle { animation: wiggle 500ms ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .xp-stripes, .anim-pop, .anim-drop, .anim-bob, .anim-wiggle { animation: none; }
+  .anim-toast { animation-duration: 2.2s; animation-name: toast-fade; }
+  .confetti { display: none; }
+  .pressable { transition: none; }
+}
+@keyframes toast-fade {
+  0%, 85% { opacity: 1; }
+  100% { opacity: 0; }
+}
