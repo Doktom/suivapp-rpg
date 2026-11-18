@@ -116,6 +116,38 @@ export function FamilyDot({ color }: { color?: string }) {
 /** A family's color, faded for backgrounds. */
 export const tint = (color: string | undefined, percent = 12) => `color-mix(in srgb, ${color ?? '#9aa39a'} ${percent}%, transparent)`
 
+/** Look of a pill button (filters, levels, sub-views): outlined, gold when pressed. */
+export const chipClass = (active: boolean, size: 'sm' | 'md' = 'sm') =>
+  `flex items-center gap-1.5 rounded-full border-2 border-outline font-extrabold ${size === 'md' ? 'min-h-11 px-4 text-sm' : 'min-h-9 px-3 text-[13px]'} ${active ? 'bg-gold text-onsticker' : 'bg-surface text-ink'}`
+
+/** A row of pill buttons to switch between views. */
+export function ChipTabs<T extends string>({ value, options, onChange, label }: { value: T; options: [T, string][]; onChange: (v: T) => void; label: string }) {
+  return (
+    <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
+      {options.map(([v, text]) => (
+        <button key={v} type="button" aria-pressed={value === v} className={chipClass(value === v)} onClick={() => onChange(v)}>{text}</button>
+      ))}
+    </div>
+  )
+}
+
+/** A round countdown: the ring empties as `left` goes from `total` to 0; the text sits in the middle. */
+export function RingTimer({ left, total, color, size = 200, children }: { left: number; total: number; color: string; size?: number; children: ReactNode }) {
+  const r = 44
+  const length = 2 * Math.PI * r
+  const ratio = total > 0 ? Math.max(0, Math.min(left / total, 1)) : 0
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" className="absolute inset-0 -rotate-90">
+        <circle cx="50" cy="50" r={r} fill="var(--color-surface)" stroke="var(--color-outline)" strokeWidth="9" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="var(--color-track)" strokeWidth="6" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth="6" strokeLinecap="round" strokeDasharray={length} strokeDashoffset={length * (1 - ratio)} className="transition-[stroke-dashoffset] duration-200 ease-linear" />
+      </svg>
+      <div className="relative flex flex-col items-center">{children}</div>
+    </div>
+  )
+}
+
 /** A small sticker: XP gains, counters. `tone` picks the sticker color. */
 export function Sticker({ children, tone = 'gold', className = '' }: { children: ReactNode; tone?: 'gold' | 'teal' | 'coral' | 'pink' | 'sky'; className?: string }) {
   return <span className={`sticker ${className}`} style={{ background: `var(--color-${tone})` }}>{children}</span>

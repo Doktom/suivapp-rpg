@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Dialog, Field, inputClass, SectionTitle } from '../components/ui'
+import { Button, Dialog, Field, inputClass, SectionTitle, chipClass } from '../components/ui'
 import { useStore } from '../data/store'
+import { WINGS } from '../rpg/dungeon'
 import { addDays, formatShortDay, mondayOf } from '../domain/date'
 import { LogDetail } from './LogDetail'
 import { formatDuration } from './logic'
@@ -91,7 +92,7 @@ function RoutineDialog({ routine, onClose }: { routine: TrainingSession; onClose
         <Button className="self-start" onClick={() => exercises[0] ? setDraft({ ...draft, items: [...items, hold(exercises[0].id, 30)] }) : setCreatingFor('__add')}>+ Exercice</Button>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="pb-1 text-sm font-medium">Niveaux (facultatif)</legend>
+          <legend className="pb-1 text-sm font-bold">Niveaux (facultatif)</legend>
           {draft.levels.map((level, li) => (
             <div key={li} className="flex flex-col gap-1 rounded-lg bg-surface p-2">
               <div className="flex gap-2">
@@ -138,14 +139,14 @@ function Regularity({ logs, today }: { logs: TrainingLog[]; today: string }) {
   const week = logs.filter((l) => mondayOf(l.day) === mondayOf(today)).length
   return (
     <section className="card p-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-display text-base">Régularité</h2>
-        <span className="text-[13px] text-muted">Série : {streak} jour{streak > 1 ? 's' : ''}</span>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-display text-lg">Assiduité au temple</h2>
+        <span className="sticker" style={{ background: WINGS.mobility.color }}>🔥 {streak} jour{streak > 1 ? 's' : ''}</span>
       </div>
       <p className="pb-2 text-sm"><strong className="tabular-nums">{week}</strong> routine{week > 1 ? 's' : ''} cette semaine</p>
       <div className="grid grid-cols-7 gap-1.5" aria-label={`Routines des ${DAYS_SHOWN} derniers jours`}>
         {days.map((d) => (
-          <span key={d} title={`${formatShortDay(d)}${doneDays.has(d) ? ' : fait' : ''}`} className={`flex h-8 items-center justify-center rounded-md text-[11px] tabular-nums ${doneDays.has(d) ? 'bg-accent text-onaccent' : 'bg-track text-muted'} ${d === today ? 'ring-2 ring-accent ring-offset-1 ring-offset-surface' : ''}`}>
+          <span key={d} title={`${formatShortDay(d)}${doneDays.has(d) ? ' : fait' : ''}`} className={`flex h-8 items-center justify-center rounded-lg border-2 text-[11px] font-extrabold tabular-nums ${doneDays.has(d) ? 'border-outline text-onsticker' : 'border-transparent bg-track text-muted'} ${d === today ? 'ring-2 ring-accent ring-offset-1 ring-offset-surface' : ''}`} style={doneDays.has(d) ? { background: WINGS.mobility.color } : undefined}>
             {Number(d.slice(8))}
           </span>
         ))}
@@ -160,12 +161,13 @@ function RoutineCard({ routine, logs, onStart }: { routine: TrainingSession; log
   const lastLevel = lastLog ? routine.levels.findIndex((l) => lastLog.name.endsWith(` · ${l.name}`)) : -1
   const [level, setLevel] = useState<number | null>(routine.levels.length ? (lastLevel >= 0 ? lastLevel : Math.floor((routine.levels.length - 1) / 2)) : null)
   const steps = mobilitySteps(routine, level)
-  const chip = (active: boolean) => `min-h-9 rounded-full px-3 text-[13px] font-medium ${active ? 'bg-accent text-onaccent' : 'bg-chip'}`
+  const chip = (active: boolean) => chipClass(active)
   return (
     <div className="flex flex-col gap-2 card p-3">
       <div className="flex flex-wrap items-center gap-2">
+        <span aria-hidden="true" className="flex size-11 flex-none items-center justify-center rounded-xl border-[2.5px] border-outline text-2xl" style={{ background: WINGS.mobility.color }}>🧘</span>
         <div className="min-w-0 flex-1">
-          <p className="font-display text-base">{routine.name}</p>
+          <p className="font-display text-lg leading-tight">{routine.name}</p>
           <p className="text-[13px] text-muted">
             {steps.length} étapes · environ {Math.max(1, Math.round(routineSeconds(steps) / 60))} min
             {lastLog ? ` · dernière fois le ${formatShortDay(lastLog.day)}` : ''}
@@ -219,40 +221,42 @@ export function Mobility({ onStart }: { onStart: (routine: TrainingSession, leve
             if (list.length === 0) return null
             return (
               <section key={c} className="flex flex-col gap-2">
-                <h2 className="text-[12px] font-semibold tracking-wide text-muted uppercase">{CATEGORY_LABELS[c]}</h2>
+                <h2 className="font-display text-lg">{CATEGORY_LABELS[c]}</h2>
                 {list.map((r) => <RoutineCard key={r.id} routine={r} logs={logs} onStart={(level) => onStart(r, level)} />)}
               </section>
             )
           })}
-          {active.length === 0 && <p className="text-muted">Aucune routine : crée la première ci-dessous.</p>}
+          {active.length === 0 && <p className="card p-4 text-muted">Aucune routine : crée la première ci-dessous.</p>}
         </div>
         <Regularity logs={logs} today={today} />
       </div>
 
       {importable.length > 0 && (
         <section className="card border-accent p-3">
-          <h2 className="font-display text-base">Tes routines d'habitudes</h2>
+          <h2 className="font-display text-lg">Des quêtes qui veulent entrer au temple</h2>
           <p className="pb-2 text-[13px] text-muted">Elles passent ici, avec leurs étapes et leurs niveaux (30 s par étape, à ajuster). L'habitude est ensuite archivée : son historique est gardé.</p>
           {importable.map((h) => (
             <div key={h.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
-              <span className="min-w-40 flex-1 font-medium">{h.name} <span className="text-[13px] font-normal text-muted">· {h.steps.length} étapes</span></span>
-              <Button onClick={() => importHabit(h.id)}>Importer et archiver l'habitude</Button>
+              <span className="min-w-40 flex-1 font-bold">{h.name} <span className="text-[13px] font-normal text-muted">· {h.steps.length} étapes</span></span>
+              <Button onClick={() => importHabit(h.id)}>Importer et archiver la quête</Button>
             </div>
           ))}
         </section>
       )}
 
       <section>
-        <SectionTitle>Historique</SectionTitle>
-        {history.length === 0 && <p className="border-t border-line py-4 text-muted">Pas encore de routine : lance-toi !</p>}
+        <div className="pb-3"><SectionTitle>Journal du temple</SectionTitle></div>
+        <div className="card px-3 [&>*:first-child]:border-t-0">
+        {history.length === 0 && <p className="py-4 text-muted">Pas encore de routine. Les tapis de yoga prennent la poussière.</p>}
         {history.map((l) => (
-          <button key={l.id} type="button" onClick={() => setDetail(l)} className="flex w-full flex-wrap items-center gap-x-3 border-t border-line py-2 text-left">
+          <button key={l.id} type="button" onClick={() => setDetail(l)} className="flex min-h-11 w-full flex-wrap items-center gap-x-3 border-t border-line py-2 text-left">
             <span className="w-16 text-[13px] text-muted">{formatShortDay(l.day)}</span>
-            <span className="min-w-40 flex-1 font-medium">{l.name}</span>
+            <span className="min-w-40 flex-1 font-bold">{l.name}</span>
             <span className="text-[13px] text-muted tabular-nums">{formatDuration(l.duration_s)} · {l.sets.filter((s) => s.done).length}/{l.sets.length} étapes</span>
-            <span className="text-[13px] font-medium text-accent">+{l.xp_earned} XP</span>
+            <span className="sticker">+{l.xp_earned} XP</span>
           </button>
         ))}
+        </div>
       </section>
 
       <section>
@@ -263,7 +267,7 @@ export function Mobility({ onStart }: { onStart: (routine: TrainingSession, leve
         {routines.map((r) => (
           <div key={r.id} className={`flex flex-wrap items-center gap-2 border-t border-line py-2 ${r.archived ? 'opacity-60' : ''}`}>
             <span className="min-w-40 flex-1">
-              <span className="block font-medium">{r.name}</span>
+              <span className="block font-bold">{r.name}</span>
               <span className="block text-[13px] text-muted">{r.category ? CATEGORY_LABELS[r.category] : ''} · {r.items.length} exercices{r.levels.length ? ` · ${r.levels.length} niveaux` : ''}{r.archived ? ' · archivée' : ''}</span>
             </span>
             <button type="button" className="min-h-11 px-2 text-[13px] text-muted" onClick={() => setEditing(r)}>Modifier</button>

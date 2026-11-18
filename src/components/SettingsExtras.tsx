@@ -14,10 +14,10 @@ const THEMES: [ThemeChoice, string][] = [
 
 export function ThemeSetting() {
   const [theme, setTheme] = useState(readTheme)
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-medium ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="pb-1 text-sm font-medium">Thème (sur cet appareil)</legend>
+      <legend className="pb-1 text-sm font-bold">Thème (sur cet appareil)</legend>
       <div className="flex w-fit seg">
         {THEMES.map(([value, label]) => (
           <button key={value} type="button" aria-pressed={theme === value} className={pill(theme === value)} onClick={() => { applyTheme(value); setTheme(value) }}>

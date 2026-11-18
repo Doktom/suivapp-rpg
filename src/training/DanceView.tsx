@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Dialog, Field, inputClass, SectionTitle } from '../components/ui'
+import { Button, ChipTabs, Dialog, Field, inputClass, SectionTitle } from '../components/ui'
 import { useStore } from '../data/store'
 import { addDays, firstOfMonth, formatLongDay, formatShortDay, mondayOf } from '../domain/date'
 import {
@@ -68,7 +68,7 @@ function SessionDialog({ session, onClose }: { session: DanceSession; onClose: (
         {draft.kind === 'social' && draft.day > today && <p className="text-[13px] text-muted">Soirée à venir : elle s'affiche dans l'agenda, et tu confirmeras après coup.</p>}
         {figures.length > 0 && draft.day <= today && (
           <fieldset className="flex flex-col gap-1">
-            <legend className="pb-1 text-sm font-medium">Figures travaillées</legend>
+            <legend className="pb-1 text-sm font-bold">Figures travaillées</legend>
             <div className="flex flex-wrap gap-1.5">
               {figures.map((f) => (
                 <label key={f.id} className="flex min-h-9 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
@@ -167,10 +167,13 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
   return (
     <div className="flex flex-col gap-5">
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="card p-3">
-          <p className="text-[13px] text-muted">Cette semaine</p>
-          <p className="font-display text-3xl">{formatMinutes(weekMinutes)}</p>
-          <p className="text-[13px] text-muted">de danse</p>
+        <div className="card flex items-center gap-3 p-3" style={{ background: 'color-mix(in srgb, var(--color-pink) 26%, var(--color-surface))' }}>
+          <span aria-hidden="true" className="anim-bob text-[44px] leading-none">🪩</span>
+          <div>
+            <p className="text-[13px] font-bold text-muted">Cette semaine sur la piste</p>
+            <p className="font-display text-3xl">{formatMinutes(weekMinutes)}</p>
+            <p className="text-[13px] font-bold text-muted">{weekMinutes >= 180 ? 'Les parquets demandent grâce.' : weekMinutes > 0 ? 'Ça commence à chalouper.' : 'La piste attend ses premiers pas.'}</p>
+          </div>
         </div>
         <div className="card p-3">
           <p className="pb-1 text-[13px] text-muted">Ce mois-ci · {formatMinutes(monthTotal)}</p>
@@ -178,7 +181,7 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
             <div key={s} className="flex items-center gap-2 text-sm">
               <StyleDot style={s} />
               <span className="w-20">{STYLE_LABELS[s]}</span>
-              <span className="h-2 flex-1 overflow-hidden rounded-full bg-track">
+              <span className="h-2.5 flex-1 overflow-hidden rounded-full border-[1.5px] border-outline bg-track">
                 <span className="block h-full rounded-full" style={{ width: `${monthTotal ? (month[s] / monthTotal) * 100 : 0}%`, background: STYLE_COLORS[s] }} />
               </span>
               <span className="w-16 text-right text-[13px] tabular-nums">{formatMinutes(month[s])}</span>
@@ -188,13 +191,14 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
       </section>
 
       <section>
-        <SectionTitle>Mes cours de la semaine</SectionTitle>
-        {week.length === 0 && <p className="border-t border-line py-3 text-muted">Ajoute tes cours fixes dans « Cours fixes » : ils apparaîtront ici et dans l'agenda.</p>}
+        <div className="pb-3"><SectionTitle>Mes cours de la semaine</SectionTitle></div>
+        <div className="card px-3 [&>*:first-child]:border-t-0">
+        {week.length === 0 && <p className="py-3 text-muted">Ajoute tes cours fixes dans « Cours fixes » : ils apparaîtront ici et dans l'agenda.</p>}
         {week.map((w) => (
           <div key={w.danceClass.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
             <StyleDot style={w.danceClass.style} />
             <div className="min-w-40 flex-1">
-              <p className="font-medium">{STYLE_LABELS[w.danceClass.style]}{w.danceClass.level ? ` · ${w.danceClass.level}` : ''}</p>
+              <p className="font-bold">{STYLE_LABELS[w.danceClass.style]}{w.danceClass.level ? ` · ${w.danceClass.level}` : ''}</p>
               <p className={`text-[13px] ${w.state === 'missed' ? 'text-warn' : 'text-muted'}`}>
                 {formatLongDay(w.day)} · {w.danceClass.start_time}–{w.danceClass.end_time}{w.danceClass.place ? ` · ${w.danceClass.place}` : ''}{w.state === 'missed' ? ' · manqué' : ''}
               </p>
@@ -204,6 +208,7 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
             )}
           </div>
         ))}
+        </div>
       </section>
 
       <section>
@@ -211,12 +216,13 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
           <SectionTitle>Soirées</SectionTitle>
           <Button onClick={() => onEdit(newSession('social', addDays(today, 1)))}>Prévoir une soirée</Button>
         </div>
-        {socials.length === 0 && <p className="border-t border-line py-3 text-muted">Aucune soirée prévue.</p>}
+        <div className="card px-3 [&>*:first-child]:border-t-0">
+        {socials.length === 0 && <p className="py-3 text-muted">Aucune soirée prévue. Les chaussures de danse s’ennuient.</p>}
         {socials.map((s) => (
           <div key={s.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
             <StyleDot style={s.style} />
             <button type="button" className="min-w-40 flex-1 text-left" onClick={() => onEdit(s)}>
-              <span className="block font-medium">{s.title || `Soirée ${STYLE_LABELS[s.style].toLowerCase()}`}</span>
+              <span className="block font-bold">{s.title || `Soirée ${STYLE_LABELS[s.style].toLowerCase()}`}</span>
               <span className="block text-[13px] text-muted">{formatLongDay(s.day)}{s.start_time ? ` · ${s.start_time}` : ''}</span>
             </button>
             {s.day <= today && (
@@ -227,23 +233,26 @@ function Week({ onEdit }: { onEdit: (s: DanceSession) => void }) {
             )}
           </div>
         ))}
+        </div>
       </section>
 
       <section>
         <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
-          <SectionTitle>Historique</SectionTitle>
+          <SectionTitle>Carnet de bal</SectionTitle>
           <Button variant="primary" onClick={() => onEdit(newSession('practice', today))}>Noter une séance</Button>
         </div>
-        {history.length === 0 && <p className="border-t border-line py-3 text-muted">Rien de noté pour l'instant.</p>}
+        <div className="card px-3 [&>*:first-child]:border-t-0">
+        {history.length === 0 && <p className="py-3 text-muted">Rien de noté pour l’instant.</p>}
         {history.map((s) => (
           <button key={s.id} type="button" onClick={() => onEdit(s)} className="flex w-full flex-wrap items-center gap-x-3 border-t border-line py-2 text-left">
             <span className="w-16 text-[13px] text-muted">{formatShortDay(s.day)}</span>
             <StyleDot style={s.style} />
-            <span className="min-w-32 flex-1 font-medium">{KIND_LABELS[s.kind]} · {STYLE_LABELS[s.style]}{s.title ? ` · ${s.title}` : ''}</span>
+            <span className="min-w-32 flex-1 font-bold">{KIND_LABELS[s.kind]} · {STYLE_LABELS[s.style]}{s.title ? ` · ${s.title}` : ''}</span>
             <span className="text-[13px] text-muted tabular-nums">{formatMinutes(s.duration_min)}{s.figure_ids.length ? ` · ${s.figure_ids.length} figure${s.figure_ids.length > 1 ? 's' : ''}` : ''}</span>
-            <span className="text-[13px] font-medium text-accent">+{s.xp_earned} XP</span>
+            <span className="sticker">+{s.xp_earned} XP</span>
           </button>
         ))}
+        </div>
       </section>
     </div>
   )
@@ -268,7 +277,7 @@ function Classes({ onEdit }: { onEdit: (c: DanceClass) => void }) {
         <button key={c.id} type="button" onClick={() => onEdit(c)} className={`flex w-full items-center gap-2 border-t border-line py-2 text-left ${c.active ? '' : 'opacity-60'}`}>
           <StyleDot style={c.style} />
           <span className="min-w-0 flex-1">
-            <span className="block font-medium">{STYLE_LABELS[c.style]}{c.level ? ` · ${c.level}` : ''}</span>
+            <span className="block font-bold">{STYLE_LABELS[c.style]}{c.level ? ` · ${c.level}` : ''}</span>
             <span className="block text-[13px] text-muted">{WEEKDAY_NAMES[c.weekday]} · {c.start_time}–{c.end_time}{c.place ? ` · ${c.place}` : ''}{c.active ? '' : ' · arrêté'}</span>
           </span>
         </button>
@@ -289,12 +298,9 @@ export function Dance() {
   const [tab, setTab] = useState<DanceTab>('week')
   const [session, setSession] = useState<DanceSession | null>(null)
   const [danceClass, setDanceClass] = useState<DanceClass | null>(null)
-  const chip = (active: boolean) => `min-h-9 rounded-full px-3 text-[13px] font-medium ${active ? 'bg-accent text-onaccent' : 'bg-chip'}`
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Vue">
-        {TABS.map(([t, label]) => <button key={t} type="button" aria-pressed={tab === t} className={chip(tab === t)} onClick={() => setTab(t)}>{label}</button>)}
-      </div>
+      <ChipTabs label="Vue" value={tab} options={TABS} onChange={setTab} />
       {tab === 'week' && <Week onEdit={setSession} />}
       {tab === 'figures' && <DanceFigures />}
       {tab === 'goals' && <DanceGoals />}

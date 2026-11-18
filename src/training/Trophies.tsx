@@ -92,8 +92,8 @@ export function RecordFeed({ limit = 5 }: { limit?: number }) {
       {feed.length === 0 && <p className="text-[13px] text-muted">Ton premier record arrivera dès que tu battras une charge de ta dernière séance.</p>}
       {feed.map((r, i) => (
         <div key={`${r.logId}-${r.exercise.id}-${i}`} className="flex items-baseline gap-2 border-t border-line py-1.5 first:border-t-0">
-          <span className="min-w-0 flex-1 text-sm font-medium">{r.exercise.name}</span>
-          <span className="text-sm font-semibold tabular-nums">{fmt(r.value)} {r.unit}</span>
+          <span className="min-w-0 flex-1 text-sm font-bold">{r.exercise.name}</span>
+          <span className="text-sm font-extrabold tabular-nums">{fmt(r.value)} {r.unit}</span>
           <span className="sticker" style={{ background: 'var(--color-teal)' }}>+{fmt(r.value - r.previous)}</span>
           <span className="w-14 text-right text-[12px] text-muted">{formatShortDay(r.day)}</span>
         </div>

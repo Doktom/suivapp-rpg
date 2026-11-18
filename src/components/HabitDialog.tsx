@@ -31,7 +31,7 @@ function LevelsEditor({ levels, steps, onChange }: { levels: Level[]; steps: Ste
   }
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="pb-1 text-sm font-medium">Niveaux, du plus léger au plus complet</legend>
+      <legend className="pb-1 text-sm font-bold">Niveaux, du plus léger au plus complet</legend>
       {levels.map((level, i) => (
         <div key={i} className="flex flex-col gap-1 rounded-lg bg-surface p-2">
           <div className="flex gap-2">
@@ -70,7 +70,7 @@ function StepsEditor({ steps, onChange }: { steps: Step[]; onChange: (steps: Ste
   }
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="pb-1 text-sm font-medium">Étapes, dans l'ordre</legend>
+      <legend className="pb-1 text-sm font-bold">Étapes, dans l'ordre</legend>
       {steps.map((step, i) => (
         <div key={step.id} className="flex items-center gap-1">
           <input aria-label={`Étape ${i + 1}`} className={inputClass} value={step.name} onChange={(e) => onChange(steps.map((s) => (s.id === step.id ? { ...s, name: e.target.value } : s)))} />
@@ -87,7 +87,7 @@ function StepsEditor({ steps, onChange }: { steps: Step[]; onChange: (steps: Ste
 function AvoidEditor({ avoid, onChange }: { avoid: Avoid; onChange: (avoid: Avoid) => void }) {
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="pb-1 text-sm font-medium">Règle</legend>
+      <legend className="pb-1 text-sm font-bold">Règle</legend>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Seulement avant (facultatif)">
           <input type="time" className={inputClass} value={avoid.before ?? ''} onChange={(e) => onChange({ ...avoid, before: e.target.value || null })} />
@@ -261,7 +261,7 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
         {frequencyChoice === 'weekdays' && (
           <div className="flex justify-between">
             {WEEKDAYS.map((label, d) => (
-              <button key={d} type="button" aria-label={WEEKDAY_NAMES[d]} aria-pressed={days.includes(d)} onClick={() => toggleDay(d)} className={`size-11 rounded-full text-sm font-medium ${days.includes(d) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
+              <button key={d} type="button" aria-label={WEEKDAY_NAMES[d]} aria-pressed={days.includes(d)} onClick={() => toggleDay(d)} className={`size-11 rounded-full text-sm font-bold ${days.includes(d) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
                 {label}
               </button>
             ))}
@@ -285,10 +285,10 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
 
         {tracking !== 'avoid' && (
           <fieldset className="flex flex-col gap-1">
-            <legend className="text-sm font-medium">Moments de la journée</legend>
+            <legend className="text-sm font-bold">Moments de la journée</legend>
             <div className="flex gap-2">
               {MOMENTS.map((m) => (
-                <button key={m} type="button" aria-pressed={moments.includes(m)} onClick={() => toggleMoment(m)} className={`min-h-11 flex-1 rounded-lg text-sm font-medium ${moments.includes(m) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
+                <button key={m} type="button" aria-pressed={moments.includes(m)} onClick={() => toggleMoment(m)} className={`min-h-11 flex-1 rounded-lg text-sm font-bold ${moments.includes(m) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
                   {MOMENT_LABELS[m]}
                 </button>
               ))}

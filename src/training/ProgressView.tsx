@@ -65,17 +65,17 @@ export function ProgressView({ logs }: { logs: TrainingLog[] }) {
           <table className="w-full min-w-[420px] text-left text-sm">
             <thead className="text-[12px] text-muted">
               <tr>
-                <th className="py-2 font-medium">Exercice</th>
-                <th className="py-2 text-right font-medium">Charge max</th>
-                <th className="py-2 text-right font-medium">Reps max</th>
-                <th className="py-2 text-right font-medium">Séances</th>
+                <th className="py-2 font-bold">Exercice</th>
+                <th className="py-2 text-right font-bold">Charge max</th>
+                <th className="py-2 text-right font-bold">Reps max</th>
+                <th className="py-2 text-right font-bold">Séances</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => (
                 <tr key={r.exercise.id} className="border-t border-line">
                   <td className="py-2">
-                    <button type="button" className="text-left font-medium" onClick={() => setExerciseId(r.exercise.id)}>{r.exercise.name}</button>
+                    <button type="button" className="text-left font-bold" onClick={() => setExerciseId(r.exercise.id)}>{r.exercise.name}</button>
                     <span className="block text-[12px] text-muted">{r.exercise.muscle}</span>
                   </td>
                   <td className="py-2 text-right tabular-nums">

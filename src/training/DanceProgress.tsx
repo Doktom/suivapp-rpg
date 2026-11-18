@@ -89,7 +89,7 @@ export function DanceFigures() {
               {list.map((f) => (
                 <div key={f.id} className="flex items-center gap-1 border-t border-line py-1.5">
                   <button type="button" className="min-h-11 min-w-0 flex-1 text-left" onClick={() => setEditing(f)}>
-                    <span className="block font-medium">{f.name}</span>
+                    <span className="block font-bold">{f.name}</span>
                     <span className="block text-[12px] text-muted">
                       {[worked(f.id) ? `travaillée ${worked(f.id)} fois` : '', f.mastered_on ? `le ${formatShortDay(f.mastered_on)}` : '', f.notes ? 'notes' : ''].filter(Boolean).join(' · ')}
                     </span>
@@ -199,14 +199,14 @@ export function DanceGoals() {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex-1"><ProgressBar percent={ratio * 100} /></div>
-              <span className="text-sm font-medium tabular-nums">{value} / {target}</span>
+              <span className="text-sm font-bold tabular-nums">{value} / {target}</span>
             </div>
             {ratio >= 1 && !goal.achieved_on && (
               <Button variant="primary" onClick={() => save('dance_goals', { ...goal, achieved_on: today, xp_earned: DANCE_XP.goal })}>Objectif atteint ! +{DANCE_XP.goal} XP</Button>
             )}
             {(goal.means.length > 0 || !goal.achieved_on) && (
               <div>
-                <p className="text-[12px] font-semibold tracking-wide text-muted uppercase">Moyens d'y arriver</p>
+                <p className="text-[12px] font-extrabold tracking-wide text-muted uppercase">Moyens d'y arriver</p>
                 {goal.means.map((m) => (
                   <div key={m.id} className="flex items-center gap-1">
                     <CheckButton square done={m.done} label={`${m.done ? 'Décocher' : 'Cocher'} : ${m.text}`} onClick={() => toggleMean(goal, m.id)} />

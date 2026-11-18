@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { EventDialog } from '../components/EventDialog'
 import { TaskDialog } from '../components/TaskDialog'
-import { Button, inputClass, ProgressBar, tint } from '../components/ui'
+import { Button, inputClass, ProgressBar, tint, chipClass } from '../components/ui'
 import { useStore, useStreaks, useToday, useValidationIndex } from '../data/store'
 import { agendaItems, quotaLines, type AgendaFilters, type AgendaItem, type ItemKind, type ItemState } from '../domain/agenda'
 import { addDays, addMonths, firstOfMonth, formatLongDay, formatMonth, formatShortDay, mondayOf } from '../domain/date'
@@ -46,8 +46,8 @@ function EventBlock({ item, onEvent, large = false }: { item: AgendaItem; onEven
       className={`flex w-full flex-col rounded-lg px-2.5 py-1.5 text-left ${large ? 'min-h-14' : 'min-h-11'}`}
       style={{ background: tint(item.color, 16), borderLeft: `4px solid ${item.color}` }}
     >
-      <span className="text-[12px] font-semibold text-muted tabular-nums">{item.when}</span>
-      <span className={`font-medium leading-tight ${large ? 'text-base' : 'text-sm'}`}>{item.kind === 'training' && item.state === 'done' ? `✓ ${item.title}` : item.title}</span>
+      <span className="text-[12px] font-extrabold text-muted tabular-nums">{item.when}</span>
+      <span className={`font-bold leading-tight ${large ? 'text-base' : 'text-sm'}`}>{item.kind === 'training' && item.state === 'done' ? `✓ ${item.title}` : item.title}</span>
       {large && item.event?.note && <span className="text-[13px] text-muted">{item.event.note}</span>}
     </button>
   )
@@ -107,7 +107,7 @@ function groups(items: AgendaItem[]) {
 }
 
 const GroupLabel = ({ children }: { children: string }) => (
-  <span className="w-16 flex-none pt-1.5 text-[12px] font-semibold tracking-wide text-muted uppercase">{children}</span>
+  <span className="w-16 flex-none pt-1.5 text-[12px] font-extrabold tracking-wide text-muted uppercase">{children}</span>
 )
 
 function habitProgress(items: AgendaItem[]) {
@@ -132,8 +132,8 @@ function WeekDay({ day, index, items, today, onOpen, onEvent, onToggle }: {
   return (
     <div className={`flex flex-col gap-3 card p-3 sm:flex-row sm:gap-4 ${isToday ? 'border-accent' : ''} ${day < today ? 'opacity-80' : ''}`}>
       <button type="button" onClick={onOpen} aria-label={`Voir le ${formatLongDay(day)}`} className="flex flex-none items-center gap-3 text-left sm:w-24 sm:flex-col sm:items-start sm:gap-0.5">
-        <span className={`text-[13px] font-semibold ${isToday ? 'text-accent' : 'text-muted'}`}>{isToday ? "Aujourd'hui" : WEEK_LONG[index]}</span>
-        <span className="font-display text-2xl leading-none font-semibold tabular-nums">{Number(day.slice(8))}</span>
+        <span className={`text-[13px] font-extrabold ${isToday ? 'text-accent' : 'text-muted'}`}>{isToday ? "Aujourd'hui" : WEEK_LONG[index]}</span>
+        <span className="font-display text-2xl leading-none tabular-nums">{Number(day.slice(8))}</span>
         <span className="text-[12px] text-muted">{formatShortDay(day).replace(/^\d+\s/, '')}</span>
         {total > 0 && (
           <span className="ml-auto w-20 sm:mt-1.5 sm:ml-0">
@@ -177,7 +177,7 @@ function DayView({ items, day, today, onEvent, onToggle }: {
   const toggle = (item: AgendaItem): Toggle => (item.kind === 'habit' && day > today ? null : (i) => onToggle(i, day))
   const section = (title: string, children: React.ReactNode) => (
     <section className="pb-4">
-      <h2 className="pb-1 text-[13px] font-semibold tracking-wide text-muted uppercase">{title}</h2>
+      <h2 className="pb-1 text-[13px] font-extrabold tracking-wide text-muted uppercase">{title}</h2>
       {children}
     </section>
   )
@@ -204,9 +204,9 @@ function MonthCell({ day, items, today, inMonth, onOpen }: { day: string; items:
       aria-label={`${formatLongDay(day)} : ${events.length} événements, ${done} sur ${total} quêtes, ${tasks.length} missions`}
       className={`flex min-h-20 min-w-0 flex-col gap-1 rounded-lg border p-1.5 text-left lg:min-h-28 ${isToday ? 'border-accent bg-surface' : 'border-line bg-surface'} ${inMonth ? '' : 'opacity-35'}`}
     >
-      <span className={`flex size-6 items-center justify-center rounded-full text-[13px] font-semibold tabular-nums ${isToday ? 'bg-accent text-onaccent' : ''}`}>{Number(day.slice(8))}</span>
+      <span className={`flex size-6 items-center justify-center rounded-full text-[13px] font-extrabold tabular-nums ${isToday ? 'bg-accent text-onaccent' : ''}`}>{Number(day.slice(8))}</span>
       {events.slice(0, 2).map((e) => (
-        <span key={e.key} className="w-full truncate rounded px-1 text-[11px] leading-5 font-medium lg:text-[12px]" style={{ background: tint(e.color, 18), borderLeft: `3px solid ${e.color}` }}>
+        <span key={e.key} className="w-full truncate rounded px-1 text-[11px] leading-5 font-bold lg:text-[12px]" style={{ background: tint(e.color, 18), borderLeft: `3px solid ${e.color}` }}>
           {e.title}
         </span>
       ))}
@@ -258,8 +258,8 @@ export function Agenda() {
   const monday = mondayOf(anchor)
   const title =
     view === 'day' ? formatLongDay(anchor) : view === 'week' ? `${formatShortDay(monday)} – ${formatShortDay(addDays(monday, 6))}` : formatMonth(anchor)
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-medium ${active ? 'bg-surface' : ''}`
-  const chip = (active: boolean) => `min-h-9 rounded-full px-3 text-[13px] font-medium ${active ? 'bg-accent text-onaccent' : 'bg-chip'}`
+  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
+  const chip = (active: boolean) => chipClass(active)
   const openDay = (day: string) => {
     setAnchor(day)
     setView('day')
@@ -284,7 +284,7 @@ export function Agenda() {
         </div>
         <div className="flex w-full items-center text-sm sm:w-auto">
           <button type="button" aria-label="Période précédente" className="size-11 text-lg" onClick={() => step(-1)}>‹</button>
-          <span className="min-w-0 flex-1 text-center font-display text-base font-semibold sm:min-w-44">{title}</span>
+          <span className="min-w-0 flex-1 text-center font-display text-base sm:min-w-44">{title}</span>
           <button type="button" aria-label="Période suivante" className="size-11 text-lg" onClick={() => step(1)}>›</button>
           <Button className="ml-1" onClick={() => setAnchor(today)}>Aujourd'hui</Button>
         </div>
@@ -308,13 +308,13 @@ export function Agenda() {
 
       {view !== 'month' && quota.length > 0 && (
         <section aria-label="Cette semaine" className="mb-4 card p-3">
-          <h2 className="pb-1.5 text-[12px] font-semibold tracking-wide text-muted uppercase">Cette semaine · sans jour fixe</h2>
+          <h2 className="pb-1.5 text-[12px] font-extrabold tracking-wide text-muted uppercase">Cette semaine · sans jour fixe</h2>
           <div className="grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {quota.map((q) => (
               <div key={q.habit.id} className="flex items-center gap-2 text-sm">
                 <span className="min-w-0 flex-1 truncate">{q.habit.name}</span>
                 <div className="w-16"><ProgressBar thin percent={(q.done / q.quota) * 100} /></div>
-                <span className={`w-24 text-right text-[13px] tabular-nums ${q.done >= q.quota ? 'font-medium text-accent' : 'text-muted'}`}>{q.done} / {q.quota}{q.monthly ? ' ce mois' : ''}</span>
+                <span className={`w-24 text-right text-[13px] tabular-nums ${q.done >= q.quota ? 'font-bold text-accent' : 'text-muted'}`}>{q.done} / {q.quota}{q.monthly ? ' ce mois' : ''}</span>
               </div>
             ))}
           </div>
@@ -324,7 +324,7 @@ export function Agenda() {
       {taskBlock && (
         <p role="status" className="mb-3 rounded-lg bg-chip px-3 py-2 text-[13px]">
           « {taskBlock} » est un bloc : coche ses étapes dans l'onglet Missions.{' '}
-          <button type="button" className="font-medium underline" onClick={() => setTaskBlock(null)}>OK</button>
+          <button type="button" className="font-bold underline" onClick={() => setTaskBlock(null)}>OK</button>
         </p>
       )}
       {view === 'day' && <DayView items={itemsOf(anchor)} day={anchor} today={today} onEvent={openEvent} onToggle={toggleItem} />}
@@ -339,7 +339,7 @@ export function Agenda() {
 
       {view === 'month' && (
         <div>
-          <div className="grid grid-cols-7 gap-1 pb-1 text-center text-[12px] font-semibold text-muted">
+          <div className="grid grid-cols-7 gap-1 pb-1 text-center text-[12px] font-extrabold text-muted">
             {WEEK_HEADERS.map((h) => <span key={h}>{h}</span>)}
           </div>
           <div className="grid grid-cols-7 gap-1">

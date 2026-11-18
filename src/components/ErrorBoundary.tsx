@@ -15,7 +15,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
         <h1 className="font-display text-2xl">Un écran a planté</h1>
         <p className="text-muted">Tes données enregistrées ne sont pas touchées. Recharge la page ; si le problème revient, note ce que tu faisais.</p>
         <p className="rounded-lg bg-chip p-3 font-mono text-[12px] break-words">{this.state.error.message}</p>
-        <button type="button" className="min-h-11 rounded-lg bg-accent px-4 text-sm font-medium text-onaccent" onClick={() => window.location.reload()}>
+        <button type="button" className="min-h-11 rounded-lg bg-accent px-4 text-sm font-bold text-onaccent" onClick={() => window.location.reload()}>
           Recharger
         </button>
       </main>

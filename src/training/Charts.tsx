@@ -41,7 +41,7 @@ function Frame({ data, title, unit, children }: { data: Datum[]; title: string; 
   const { ref, width } = useWidth()
   return (
     <figure className="flex flex-col gap-1">
-      <figcaption className="text-sm font-medium">{title} <span className="font-normal text-muted">({unit})</span></figcaption>
+      <figcaption className="text-sm font-bold">{title} <span className="font-normal text-muted">({unit})</span></figcaption>
       <div ref={ref} className="relative w-full">{children(width)}</div>
       <details className="text-[13px] text-muted">
         <summary className="min-h-9 cursor-pointer leading-9">Voir en tableau</summary>

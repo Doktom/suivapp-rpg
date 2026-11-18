@@ -111,13 +111,13 @@ export function SportGoals() {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex-1"><ProgressBar percent={ratio * 100} /></div>
-              <span className="text-sm font-medium tabular-nums">{fmt(value)} / {fmt(target)}{unit}</span>
+              <span className="text-sm font-bold tabular-nums">{fmt(value)} / {fmt(target)}{unit}</span>
             </div>
             {ratio >= 1 && !goal.achieved_on && (
               <Button variant="primary" onClick={() => save('training_goals', { ...goal, achieved_on: today, xp_earned: GOAL_XP })}>Objectif atteint ! +{GOAL_XP} XP</Button>
             )}
             <div>
-              <p className="text-[12px] font-semibold tracking-wide text-muted uppercase">Moyens d'y arriver</p>
+              <p className="text-[12px] font-extrabold tracking-wide text-muted uppercase">Moyens d'y arriver</p>
               {goal.means.map((m) => (
                 <div key={m.id} className="flex items-center gap-1">
                   <CheckButton square done={m.done} label={`${m.done ? 'Décocher' : 'Cocher'} : ${m.text}`} onClick={() => toggleMean(goal, m.id)} />

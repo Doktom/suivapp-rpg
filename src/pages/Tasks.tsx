@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Checklists } from '../components/Checklists'
 import { TaskDialog } from '../components/TaskDialog'
 import { TaskItem } from '../components/TaskItem'
-import { Button, inputClass } from '../components/ui'
+import { Button, inputClass, chipClass } from '../components/ui'
 import { useStore, useToday } from '../data/store'
 
 export function Tasks() {
@@ -18,7 +18,7 @@ export function Tasks() {
     .filter((t) => showDone || !t.completed_at)
     .sort((a, b) => (a.due_date ?? '9999').localeCompare(b.due_date ?? '9999') || a.title.localeCompare(b.title, 'fr'))
   const selected = data.task_lists.find((l) => l.id === listId)
-  const chip = (active: boolean) => `min-h-11 rounded-full px-4 text-sm font-medium ${active ? 'bg-accent text-onaccent' : 'bg-chip'}`
+  const chip = (active: boolean) => chipClass(active, 'md')
 
   const addList = (e: FormEvent) => {
     e.preventDefault()

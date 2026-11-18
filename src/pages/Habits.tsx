@@ -27,7 +27,7 @@ function HabitLine({ habit, onEdit }: { habit: Habit; onEdit: () => void }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 border-t border-line py-2">
       <div className="min-w-48 flex-1">
-        <div className="font-medium">{habit.name}</div>
+        <div className="font-bold">{habit.name}</div>
         <div className="text-[13px] text-muted">
           {describeFrequency(habit.frequency)}{tracking ? ` · ${tracking}` : ''} · série {streak.current} {unit} · record {streak.best} {unit}
           {paused ? ' · en pause' : ''}
@@ -67,9 +67,9 @@ function Catalog({ onClose }: { onClose: () => void }) {
   return (
     <Dialog title="Catalogue de quêtes" onClose={onClose}>
       <div className="flex flex-wrap gap-1.5 pb-3" role="group" aria-label="Familles">
-        <button type="button" aria-pressed={shown === null} onClick={() => setShown(null)} className={`min-h-9 rounded-full px-3 text-[13px] font-medium ${shown === null ? 'bg-accent text-onaccent' : 'bg-chip'}`}>Toutes</button>
+        <button type="button" aria-pressed={shown === null} onClick={() => setShown(null)} className={`min-h-9 rounded-full px-3 text-[13px] font-bold ${shown === null ? 'bg-accent text-onaccent' : 'bg-chip'}`}>Toutes</button>
         {families.map((f) => (
-          <button key={f.id} type="button" aria-pressed={shown === f.id} onClick={() => setShown(shown === f.id ? null : f.id)} className="flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium" style={{ background: shown === f.id ? f.color : tint(f.color, 18), color: shown === f.id ? '#fff' : undefined }}>
+          <button key={f.id} type="button" aria-pressed={shown === f.id} onClick={() => setShown(shown === f.id ? null : f.id)} className="flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-bold" style={{ background: shown === f.id ? f.color : tint(f.color, 18), color: shown === f.id ? '#fff' : undefined }}>
             {shown !== f.id && <span className="size-2 rounded-full" style={{ background: f.color }} aria-hidden="true" />}
             {f.name}
           </button>
@@ -83,7 +83,7 @@ function Catalog({ onClose }: { onClose: () => void }) {
               {templates.map((t) => (
                 <div key={t.id} className="flex items-center gap-2 border-t border-line py-1.5">
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium">{t.name}</div>
+                    <div className="font-bold">{t.name}</div>
                     <div className="text-[13px] text-muted">{describeFrequency(t.frequency)}{describeTracking(t) ? ` · ${describeTracking(t)}` : ''}</div>
                   </div>
                   {!t.builtin && <button type="button" className="min-h-11 px-2 text-[13px] text-muted" onClick={() => remove('habit_templates', t.id)}>Retirer</button>}
@@ -125,7 +125,7 @@ export function Habits() {
       {used.length > 1 && (
         <nav aria-label="Aller à une famille" className="flex flex-wrap gap-1.5 pb-4">
           {used.map((f) => (
-            <a key={f.id} href={`#habits`} onClick={(e) => { e.preventDefault(); document.getElementById(`family-${f.id}`)?.scrollIntoView({ behavior: 'smooth' }) }} className="flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium" style={{ background: tint(f.color, 18) }}>
+            <a key={f.id} href={`#habits`} onClick={(e) => { e.preventDefault(); document.getElementById(`family-${f.id}`)?.scrollIntoView({ behavior: 'smooth' }) }} className="flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-bold" style={{ background: tint(f.color, 18) }}>
               <span className="size-2 rounded-full" style={{ background: f.color }} aria-hidden="true" />
               {f.name}
               <span className="text-muted tabular-nums">{active.filter((h) => h.family_id === f.id).length}</span>

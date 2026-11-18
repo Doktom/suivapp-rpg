@@ -121,7 +121,7 @@ function SessionDialog({ session, onClose }: { session: TrainingSession; onClose
         {draft.items.map((item, index) => (
           <div key={item.id} className="flex flex-col gap-2 rounded-lg bg-surface p-2">
             <div className="flex items-center gap-1">
-              <span className="flex-1 text-[12px] font-semibold tracking-wide text-muted uppercase">{item.kind === 'circuit' ? 'Circuit' : `Exercice ${index + 1}`}</span>
+              <span className="flex-1 text-[12px] font-extrabold tracking-wide text-muted uppercase">{item.kind === 'circuit' ? 'Circuit' : `Exercice ${index + 1}`}</span>
               <button type="button" aria-label="Monter" disabled={index === 0} className={small} onClick={() => move(index, -1)}>↑</button>
               <button type="button" aria-label="Descendre" disabled={index === draft.items.length - 1} className={small} onClick={() => move(index, 1)}>↓</button>
               <button type="button" aria-label="Retirer" className={small} onClick={() => setDraft({ ...draft, items: draft.items.filter((i) => i.id !== item.id) })}>×</button>
@@ -230,7 +230,7 @@ export function ProgramEditor() {
           return (
             <div key={s.id} className={`flex flex-wrap items-center gap-2 border-t border-line py-2 ${s.archived ? 'opacity-60' : ''}`}>
               <div className="min-w-40 flex-1">
-                <p className="font-medium">{s.name}</p>
+                <p className="font-bold">{s.name}</p>
                 <p className="text-[13px] text-muted">{PLACE_LABELS[s.place]} · {s.items.filter((i) => i.kind === 'exercise').length} exercices{s.archived ? ' · archivée' : ''}</p>
               </div>
               {!s.archived && (
@@ -255,7 +255,7 @@ export function ProgramEditor() {
           {exercises.map((e) => (
             <button key={e.id} type="button" onClick={() => setEditingExercise(e)} className="flex min-h-11 items-center gap-2 border-t border-line py-1.5 text-left">
               <span className="min-w-0 flex-1">
-                <span className="block font-medium">{e.name}</span>
+                <span className="block font-bold">{e.name}</span>
                 <span className="block text-[12px] text-muted">{[e.muscle, e.unilateral ? 'unilatéral' : '', used(e.id) ? '' : 'hors programme'].filter(Boolean).join(' · ')}</span>
               </span>
             </button>

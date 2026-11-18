@@ -167,7 +167,7 @@ export function Trophies() {
           `${today}-${unlocked}`,
         )
 
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-medium ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
 
   return (
     <div className="flex flex-col gap-5">
@@ -227,7 +227,7 @@ export function Trophies() {
             Journées parfaites d'affilée : <strong className="text-ink">{perfectRuns.current}</strong> en cours, record <strong className="text-ink">{perfectRuns.longest}</strong>.
             {' '}Une semaine est complète si chaque quête n'a qu'un oubli au plus et que les quotas sont tenus ; un mois, s'il dépasse {pct(MONTH_THRESHOLD)}.
           </p>
-          <h3 className="pt-1 text-[12px] font-semibold tracking-wide text-muted uppercase">Séries en cours</h3>
+          <h3 className="pt-1 text-[12px] font-extrabold tracking-wide text-muted uppercase">Séries en cours</h3>
           {board.filter((b) => b.best > 0).slice(0, STREAKS_SHOWN).map((b) => (
             <div key={b.habit.id} className="flex items-center gap-2 text-sm">
               <span className="min-w-0 flex-1 truncate">{b.habit.name}</span>
@@ -265,7 +265,7 @@ export function Trophies() {
         </div>
         {GROUPS.map((g) => (
           <div key={g} className="flex flex-col gap-2">
-            <h3 className="text-[12px] font-semibold tracking-wide text-muted uppercase">{BADGE_GROUP_LABELS[g]}</h3>
+            <h3 className="text-[12px] font-extrabold tracking-wide text-muted uppercase">{BADGE_GROUP_LABELS[g]}</h3>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {badges
                 .filter((b) => b.group === g)

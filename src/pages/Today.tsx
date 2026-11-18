@@ -68,7 +68,7 @@ export function Today() {
   ).length
   const total = due.length - running
 
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-medium ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
 
   return (
     <>

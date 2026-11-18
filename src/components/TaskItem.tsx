@@ -54,7 +54,7 @@ export function TaskItem({ task, today, editable = false }: { task: Task; today:
     <div className="border-t border-line py-1.5">
       <div className="flex items-center gap-2">
         {isBlock ? (
-          <span className="flex size-11 flex-none items-center justify-center text-xs font-medium text-muted tabular-nums">{doneCount}/{children.length}</span>
+          <span className="flex size-11 flex-none items-center justify-center text-xs font-bold text-muted tabular-nums">{doneCount}/{children.length}</span>
         ) : (
           <CheckButton square done={isDone} label={`${isDone ? 'Rouvrir' : 'Terminer'} : ${task.title}`} onClick={() => toggleTask(task)} />
         )}

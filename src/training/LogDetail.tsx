@@ -35,16 +35,16 @@ export function LogDetail({ log, onClose }: { log: TrainingLog; onClose: () => v
       <div className="flex max-h-[70dvh] flex-col gap-3 overflow-y-auto">
         <p className="text-sm text-muted">
           {formatLongDay(log.day)} · {formatDuration(log.duration_s)}{mobility ? '' : ` · ${Math.round(volume(log.sets)).toLocaleString('fr-FR')} kg`}
-          {log.feeling ? ` · ${FEELING_LABELS[log.feeling]}` : ''} · <span className="font-medium text-accent">+{log.xp_earned} XP</span>
+          {log.feeling ? ` · ${FEELING_LABELS[log.feeling]}` : ''} · <span className="font-bold text-accent">+{log.xp_earned} XP</span>
         </p>
         {!mobility && <p className="text-sm">Échauffement : {log.warmup_done ? 'fait' : 'non coché'}{rounds > 0 ? ` · circuit : ${rounds} tour${rounds > 1 ? 's' : ''}` : ''}</p>}
         {groups.map((g) => {
           const done = g.sets.filter((s) => s.done)
           return (
             <section key={`${g.exerciseId}-${g.chained}`} className={`border-t border-line pt-2 ${g.chained ? 'pl-4' : ''}`}>
-              <p className="font-medium">
+              <p className="font-bold">
                 {g.chained ? '↳ ' : ''}{name(g.exerciseId)}
-                {log.records.includes(g.exerciseId) && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-onaccent">Record</span>}
+                {log.records.includes(g.exerciseId) && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-[11px] font-extrabold text-onaccent">Record</span>}
               </p>
               <p className="text-[13px] text-muted tabular-nums">
                 {done.length === 0 ? 'Pas fait' : done.map(describeSet).join(' · ')}
@@ -55,7 +55,7 @@ export function LogDetail({ log, onClose }: { log: TrainingLog; onClose: () => v
         })}
         {(wod || log.wod_result) && (
           <section className="border-t border-line pt-2">
-            <p className="font-medium">Finisher{wod ? ` : ${wod.name}` : ''}</p>
+            <p className="font-bold">Finisher{wod ? ` : ${wod.name}` : ''}</p>
             {log.wod_result && <p className="text-[13px] text-muted">{log.wod_result}</p>}
           </section>
         )}

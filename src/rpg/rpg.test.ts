@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { indexValidations as buildIndex } from '../domain/schedule'
 import type { Habit, Validation } from '../domain/types'
+import type { LoggedSet } from '../training/types'
+import { dungeonLine, monsterFor, monsterHp, monstersDefeated, WINGS } from './dungeon'
 import { planCopy } from './suivappCopy'
 import { bossFight, BOSSES, gearTier, heroClass, nextRank, rankTitle, tavernLine, weeklyBoss, xpCheer } from './lore'
 
@@ -95,5 +97,35 @@ describe('copy from Suivapp', () => {
   it('copies the tables under this app prefix and leaves device preferences alone', () => {
     const plan = planCopy(['suivapp:habits', 'suivapp:theme', 'suivapp:training-draft', 'suivapp-rpg:habits', 'other'])
     expect(plan).toEqual([{ from: 'suivapp:habits', to: 'suivapp-rpg:habits' }])
+  })
+})
+
+describe('dungeon', () => {
+  const set = (item_id: string, index: number, done: boolean, chained = false): LoggedSet =>
+    ({ item_id, exercise_id: `ex-${item_id}`, index, reps: 10, weight: 20, done, chained }) as LoggedSet
+
+  it('gives each exercise a stable monster', () => {
+    expect(monsterFor('bench')).toEqual(monsterFor('bench'))
+    expect(monsterFor('bench').emoji.length).toBeGreaterThan(0)
+  })
+
+  it('counts one hit point per main set, chained movements apart', () => {
+    const rows = [set('a', 0, true), set('a', 0, false, true), set('a', 1, false), set('a', 2, false)]
+    expect(monsterHp(rows)).toEqual({ hp: 2, maxHp: 3, defeated: false })
+    expect(monsterHp([set('a', 0, true), set('a', 1, true)]).defeated).toBe(true)
+    expect(monsterHp([]).defeated).toBe(false)
+  })
+
+  it('counts the monsters defeated in a session', () => {
+    expect(monstersDefeated([set('a', 0, true), set('a', 1, true), set('b', 0, true), set('b', 1, false)])).toBe(1)
+  })
+
+  it('has a line for every stage of the week', () => {
+    for (const done of [0, 1, 2, 3, 4]) {
+      const line = dungeonLine({ done, target: 3, next: 'Training 1', seed: '2026-11-19' })
+      expect(line.length).toBeGreaterThan(10)
+      expect(line).not.toContain('undefined')
+    }
+    expect(WINGS.dance.stat).toBe('Grâce')
   })
 })

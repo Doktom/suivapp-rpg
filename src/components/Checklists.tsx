@@ -63,7 +63,7 @@ export function Checklists() {
       {data.checklists.map((c) => (
         <div key={c.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
           <div className="min-w-48 flex-1">
-            <div className="font-medium">{c.name}</div>
+            <div className="font-bold">{c.name}</div>
             <div className="text-[13px] text-muted">
               {c.items.length} éléments{c.recurrence ? ` · ↻ ${describeRecurrence(c.recurrence)}` : ''}{running(c) ? ' · en cours' : ''}
             </div>

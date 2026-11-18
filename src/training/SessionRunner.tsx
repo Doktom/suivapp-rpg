@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, CheckButton, inputClass } from '../components/ui'
+import { Button, CheckButton, inputClass, ProgressBar, Sticker } from '../components/ui'
+import { monsterFor, monsterHp, monstersDefeated, WINGS } from '../rpg/dungeon'
 import { useStore } from '../data/store'
 import { beep, useTick, useWakeLock } from './chrono'
 import { bests, clock, findRecords, formatDuration, lastSets, randomWod, sessionXp, volume } from './logic'
@@ -42,6 +43,7 @@ export function writeDraft(draft: Draft | null) {
   }
 }
 
+const FEELING_EMOJI: Record<Feeling, string> = { easy: '😎', good: '💪', hard: '🥵' }
 const numberInput = `${inputClass} !w-16 !px-2 text-center tabular-nums`
 
 function describeTargets(item: ExerciseItem): string {
@@ -60,11 +62,12 @@ function describeTargets(item: ExerciseItem): string {
 function RestBar({ end, now, onAdd, onSkip }: { end: number; now: number; onAdd: () => void; onSkip: () => void }) {
   const left = (end - now) / 1000
   return (
-    <div className="flex items-center gap-2 rounded-xl bg-accent px-3 py-1.5 text-onaccent">
-      <span className="text-[13px]">Repos</span>
-      <span className="flex-1 font-display text-2xl font-semibold tabular-nums">{clock(left)}</span>
-      <button type="button" className="min-h-11 rounded-lg px-2 text-sm font-medium" onClick={onAdd}>+30 s</button>
-      <button type="button" className="min-h-11 rounded-lg px-2 text-sm font-medium" onClick={onSkip}>Passer</button>
+    <div role="timer" aria-label="Repos" className="anim-drop flex items-center gap-2 rounded-2xl border-[2.5px] border-outline bg-gold py-1 pr-1 pl-3 text-onsticker shadow-[3px_3px_0_var(--color-outline)]">
+      <span aria-hidden="true" className="text-xl">🧪</span>
+      <span className="text-[13px] font-extrabold">Pause potion</span>
+      <span className="flex-1 font-display text-2xl tabular-nums">{clock(left)}</span>
+      <button type="button" className="min-h-11 rounded-xl px-2 text-sm font-extrabold" onClick={onAdd}>+30 s</button>
+      <button type="button" className="min-h-11 rounded-xl border-2 border-outline bg-surface px-3 text-sm font-extrabold text-ink" onClick={onSkip}>Passer</button>
     </div>
   )
 }
@@ -149,19 +152,23 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
 
   const doneSets = draft.sets.filter((s) => s.done)
   const totalSets = draft.sets.length
+  const monsters = session.items.filter((i) => i.kind === 'exercise').length
+  const defeated = monstersDefeated(draft.sets)
 
   const pickWod = (w: Wod | null) => update({ wod_id: w?.id ?? null, wod_started: null, wod_elapsed: null })
 
   return (
     <div className="flex flex-col gap-3 pb-32">
-      <div className="sticky top-0 z-[5] -mx-5 flex flex-col gap-2 bg-ground px-5 pt-1 pb-2 lg:-mx-10 lg:px-10">
+      <div className="sticky top-0 z-[5] -mx-4 flex flex-col gap-2 border-b-[2.5px] border-outline bg-ground px-4 pt-1 pb-2 lg:-mx-10 lg:px-10">
         <div className="flex items-center gap-3">
+          <span aria-hidden="true" className="text-[30px] leading-none">⚔️</span>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-xl">{session.name}</h1>
-            <p className="text-[13px] text-muted tabular-nums">{clock(elapsed)} · {doneSets.length}/{totalSets} séries</p>
+            <h1 className="truncate font-display text-xl leading-tight">{session.name}</h1>
+            <p className="text-[13px] font-bold text-muted tabular-nums">{clock(elapsed)} · {doneSets.length}/{totalSets} séries · {defeated}/{monsters} monstres</p>
           </div>
-          <Button variant="primary" onClick={() => setFinishing(true)}>Terminer</Button>
+          <Button variant="primary" onClick={() => setFinishing(true)}>Sortir</Button>
         </div>
+        <ProgressBar thin percent={(doneSets.length / Math.max(1, totalSets)) * 100} color={WINGS.sport.color} />
         {draft.rest_end && draft.rest_end > now && (
           <RestBar end={draft.rest_end} now={now} onAdd={() => update({ rest_end: draft.rest_end! + 30_000 })} onSkip={() => update({ rest_end: null })} />
         )}
@@ -170,8 +177,8 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
       <section className="flex items-center gap-2 card p-3">
         <CheckButton done={draft.warmup_done} label={`Échauffement : ${session.warmup}`} onClick={() => update({ warmup_done: !draft.warmup_done })} />
         <div>
-          <p className="text-[12px] font-semibold tracking-wide text-muted uppercase">Échauffement</p>
-          <p className="font-medium">{session.warmup || 'Échauffement'}</p>
+          <p className="text-[12px] font-extrabold tracking-wide text-muted uppercase">🔥 Dérouiller l’armure</p>
+          <p className="font-extrabold">{session.warmup || 'Échauffement'}</p>
         </div>
       </section>
 
@@ -180,13 +187,13 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
           const rounds = draft.circuits[item.id] ?? 0
           return (
             <section key={item.id} className="card p-3">
-              <p className="text-[12px] font-semibold tracking-wide text-muted uppercase">Circuit · {item.rounds_min} à {item.rounds_max} tours</p>
-              <p className="font-medium">{item.name}</p>
+              <p className="text-[12px] font-extrabold tracking-wide text-muted uppercase">🌀 Couloir piégé · {item.rounds_min} à {item.rounds_max} tours</p>
+              <p className="font-extrabold">{item.name}</p>
               <p className="text-[13px] text-muted">{item.content}</p>
               <div className="flex items-center gap-2 pt-2">
-                <button type="button" aria-label="Retirer un tour" className="size-11 rounded-lg bg-chip text-xl" onClick={() => update({ circuits: { ...draft.circuits, [item.id]: Math.max(0, rounds - 1) } })}>−</button>
-                <span className="min-w-24 text-center font-display text-xl font-semibold tabular-nums">{rounds} tour{rounds > 1 ? 's' : ''}</span>
-                <button type="button" aria-label="Ajouter un tour" className="size-11 rounded-lg bg-chip text-xl" onClick={() => update({ circuits: { ...draft.circuits, [item.id]: rounds + 1 } })}>+</button>
+                <button type="button" aria-label="Retirer un tour" className="pressable size-11 rounded-xl bg-surface text-xl font-extrabold" onClick={() => update({ circuits: { ...draft.circuits, [item.id]: Math.max(0, rounds - 1) } })}>−</button>
+                <span className="min-w-24 text-center font-display text-xl tabular-nums">{rounds} tour{rounds > 1 ? 's' : ''}</span>
+                <button type="button" aria-label="Ajouter un tour" className="pressable size-11 rounded-xl bg-surface text-xl font-extrabold" onClick={() => update({ circuits: { ...draft.circuits, [item.id]: rounds + 1 } })}>+</button>
               </div>
             </section>
           )
@@ -196,14 +203,25 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
         const rows = draft.sets.filter((s) => s.item_id === item.id)
         const last = lastSets(item.exercise_id, data.training_logs)
         const record = best.get(item.exercise_id)
-        const allDone = rows.every((r) => r.done)
+        const monster = monsterFor(item.exercise_id)
+        const fight = monsterHp(rows)
         return (
-          <section key={item.id} className={`card p-3 ${allDone ? 'border-accent' : ''}`}>
-            <div className="flex items-baseline justify-between gap-2">
-              <h2 className="font-display text-base">{exercise?.name}</h2>
-              <span className="text-[12px] text-muted">{exercise?.muscle}</span>
+          <section key={item.id} className="card p-3" style={fight.defeated ? { background: 'color-mix(in srgb, var(--color-teal) 22%, var(--color-surface))' } : undefined}>
+            <div className="flex items-center gap-3">
+              <span aria-hidden="true" className={`flex size-12 flex-none items-center justify-center rounded-2xl border-[2.5px] border-outline text-[28px] ${fight.defeated ? 'anim-pop bg-teal' : 'bg-surface anim-bob'}`}>{fight.defeated ? '💫' : monster.emoji}</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h2 className="font-display text-lg leading-tight">{exercise?.name}</h2>
+                  {fight.defeated ? <Sticker tone="teal" className="anim-pop">Terrassé !</Sticker> : <span className="text-[12px] font-bold text-muted">{exercise?.muscle}</span>}
+                </div>
+                <p className="text-[12px] font-bold text-muted italic">Gardé par un monstre {monster.epithet}</p>
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="flex-1"><ProgressBar thin percent={(fight.hp / Math.max(1, fight.maxHp)) * 100} color={WINGS.sport.color} /></div>
+                  <span className="text-[12px] font-extrabold tabular-nums">{fight.hp} / {fight.maxHp} PV</span>
+                </div>
+              </div>
             </div>
-            <p className="text-[13px] text-muted">
+            <p className="pt-1.5 text-[13px] text-muted">
               {describeTargets(item)}{exercise?.unilateral ? ' · par côté' : ''}{item.note ? ` · ${item.note}` : ''}
             </p>
             {(last.length > 0 || (record && record.weight > 0)) && (
@@ -227,7 +245,7 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
                     <span className="text-[13px] text-muted">×</span>
                     <input aria-label={`Charge en kg, ${s.chained ? exerciseName(s.exercise_id) : `série ${s.index + 1}`}`} type="number" inputMode="decimal" min="0" step="0.5" placeholder="kg" className={numberInput} value={s.weight ?? ''} onChange={(e) => setRow(s, { weight: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })} />
                     <span className="text-[13px] text-muted">kg</span>
-                    <span className="flex-1 text-right text-[12px] font-semibold text-accent">{isRecord ? 'Record !' : ''}</span>
+                    <span className="flex flex-1 justify-end">{isRecord && <Sticker className="anim-pop">Record !</Sticker>}</span>
                     <CheckButton square done={s.done} label={`${s.done ? 'Annuler' : 'Valider'} la série ${s.index + 1} de ${exerciseName(s.exercise_id)}`} onClick={() => toggleSet(item, s)} />
                   </div>
                 )
@@ -239,10 +257,10 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
 
       {session.finisher && (
         <section className="flex flex-col gap-2 card p-3">
-          <p className="text-[12px] font-semibold tracking-wide text-muted uppercase">Finisher · poids de corps</p>
+          <p className="text-[12px] font-extrabold tracking-wide text-muted uppercase">🐉 Épreuve finale · poids de corps</p>
           <div className="flex flex-wrap gap-2">
             <select aria-label="Choisir le finisher" className={`${inputClass} !w-auto min-w-0 flex-1`} value={draft.wod_id ?? ''} onChange={(e) => pickWod(data.training_wods.find((w) => w.id === e.target.value) ?? null)}>
-              <option value="">Choisir un WOD…</option>
+              <option value="">Choisir une épreuve…</option>
               {data.training_wods.map((w) => <option key={w.id} value={w.id}>{w.name} · {WOD_FORMAT_LABELS[w.format]}</option>)}
             </select>
             <Button onClick={() => pickWod(randomWod(data.training_wods, draft.wod_id))}>Au hasard</Button>
@@ -250,7 +268,7 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
           {wod && (
             <>
               <div>
-                <p className="font-medium">{wod.name}</p>
+                <p className="font-display text-lg">{wod.name}</p>
                 <ul className="text-[13px] text-muted">{wod.items.map((i) => <li key={i}>• {i}</li>)}</ul>
                 {wod.format === 'for_time' && wod.rounds > 1 && <p className="text-[13px] text-muted">{wod.rounds} tours</p>}
               </div>
@@ -263,7 +281,7 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
                   onStop={(s) => update({ wod_started: null, wod_elapsed: s })}
                 />
               ) : (
-                <p className="rounded-lg bg-chip px-3 py-2 text-sm">Chrono : <strong className="tabular-nums">{clock(draft.wod_elapsed)}</strong></p>
+                <p className="rounded-xl border-2 border-outline bg-teal px-3 py-2 text-sm text-onsticker">Épreuve bouclée en <strong className="tabular-nums">{clock(draft.wod_elapsed)}</strong></p>
               )}
               <input aria-label="Résultat du finisher" placeholder={wod.format === 'amrap' ? 'Résultat : nombre de tours' : 'Résultat ou remarque (facultatif)'} className={inputClass} value={draft.wod_result} onChange={(e) => update({ wod_result: e.target.value })} />
             </>
@@ -272,34 +290,34 @@ export function SessionRunner({ session, draft, setDraft, onClose }: {
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="primary" onClick={() => setFinishing(true)}>Terminer la séance</Button>
-        {!confirmQuit && <Button onClick={() => setConfirmQuit(true)}>Abandonner…</Button>}
+        <Button variant="primary" onClick={() => setFinishing(true)}>Sortir du donjon</Button>
+        {!confirmQuit && <Button onClick={() => setConfirmQuit(true)}>Fuir…</Button>}
         {confirmQuit && (
           <>
-            <Button className="!bg-warn !text-onaccent" onClick={() => { setDraft(null); onClose(null) }}>Abandonner sans enregistrer</Button>
-            <Button onClick={() => setConfirmQuit(false)}>Continuer la séance</Button>
+            <Button className="!bg-warn !text-onaccent" onClick={() => { setDraft(null); onClose(null) }}>Fuir sans rien enregistrer</Button>
+            <Button onClick={() => setConfirmQuit(false)}>Retourner au combat</Button>
           </>
         )}
       </div>
 
       {finishing && (
-        <div role="dialog" aria-label="Terminer la séance" className="fixed inset-0 z-20 flex items-end justify-center bg-black/40 p-3 sm:items-center">
-          <div className="flex w-full max-w-md flex-col gap-3 rounded-2xl bg-ground p-5">
-            <h2 className="font-display text-lg">Fin de séance</h2>
+        <div role="dialog" aria-label="Sortir du donjon" className="fixed inset-0 z-20 flex items-end justify-center bg-black/50 p-3 sm:items-center">
+          <div className="card anim-drop flex w-full max-w-md flex-col gap-3 bg-ground p-5">
+            <h2 className="font-display text-xl">Sortie du donjon</h2>
             <p className="text-sm text-muted">
-              {formatDuration(elapsed)} · {doneSets.length} séries · {Math.round(volume(draft.sets)).toLocaleString('fr-FR')} kg soulevés
+              {formatDuration(elapsed)} · {doneSets.length} séries · {defeated} monstre{defeated > 1 ? 's' : ''} terrassé{defeated > 1 ? 's' : ''} · {Math.round(volume(draft.sets)).toLocaleString('fr-FR')} kg soulevés
             </p>
             <fieldset className="flex flex-col gap-1">
-              <legend className="pb-1 text-sm font-medium">Ressenti</legend>
+              <legend className="pb-1 text-sm font-extrabold">Comment s’est passé le combat ?</legend>
               <div className="flex gap-2">
                 {(Object.keys(FEELING_LABELS) as Feeling[]).map((f) => (
-                  <button key={f} type="button" aria-pressed={feeling === f} onClick={() => setFeeling(f)} className={`min-h-11 flex-1 rounded-lg text-sm font-medium ${feeling === f ? 'bg-accent text-onaccent' : 'bg-chip'}`}>{FEELING_LABELS[f]}</button>
+                  <button key={f} type="button" aria-pressed={feeling === f} onClick={() => setFeeling(f)} className={`min-h-11 flex-1 rounded-xl border-2 border-outline text-sm font-extrabold ${feeling === f ? 'bg-gold text-onsticker' : 'bg-surface'}`}>{FEELING_EMOJI[f]} {FEELING_LABELS[f]}</button>
                 ))}
               </div>
             </fieldset>
             <textarea aria-label="Note sur la séance" placeholder="Une note (facultatif)" rows={2} className={`${inputClass} py-2`} value={note} onChange={(e) => setNote(e.target.value)} />
-            <Button variant="primary" onClick={finish}>Enregistrer la séance</Button>
-            <Button onClick={() => setFinishing(false)}>Revenir à la séance</Button>
+            <Button variant="primary" onClick={finish}>Ramener le butin</Button>
+            <Button onClick={() => setFinishing(false)}>Retourner au combat</Button>
           </div>
         </div>
       )}

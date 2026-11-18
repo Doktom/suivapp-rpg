@@ -60,10 +60,10 @@ export function WodTimer({ wod, startedAt, now, onStart, onStop }: {
 
   const forTime = wod.format === 'for_time'
   return (
-    <div className="flex flex-col items-center gap-2 rounded-xl bg-chip p-4 text-center">
-      <span className="text-[13px] font-medium text-muted">{WOD_FORMAT_LABELS[wod.format]} · {phase.label}</span>
-      <span className="font-display text-5xl font-semibold tabular-nums">{forTime && startedAt ? clock(elapsed) : clock(startedAt ? phase.left : wodPhase(wod, 0).left)}</span>
-      {!startedAt && <Button variant="primary" onClick={onStart}>Lancer le chrono</Button>}
+    <div role="timer" className="flex flex-col items-center gap-2 rounded-2xl border-[2.5px] border-outline p-4 text-center text-onsticker" style={{ background: startedAt ? 'var(--color-coral)' : 'var(--color-pink)' }}>
+      <span className="text-[13px] font-extrabold">{WOD_FORMAT_LABELS[wod.format]} · {phase.label}</span>
+      <span className="font-display text-6xl tabular-nums">{forTime && startedAt ? clock(elapsed) : clock(startedAt ? phase.left : wodPhase(wod, 0).left)}</span>
+      {!startedAt && <Button variant="primary" onClick={onStart}>Affronter l’épreuve</Button>}
       {startedAt && !phase.over && (
         <Button variant="primary" onClick={() => onStop(Math.round(elapsed))}>{forTime ? 'Terminé !' : 'Arrêter'}</Button>
       )}
