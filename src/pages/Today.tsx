@@ -34,7 +34,9 @@ function BossCard() {
           <div className="flex-1"><ProgressBar percent={(fight.hp / fight.maxHp) * 100} color="var(--color-coral)" /></div>
           <span className="text-[12px] font-extrabold tabular-nums">{fight.hp} / {fight.maxHp} PV</span>
         </div>
-        <p className="pt-1 text-[13px] text-muted">{fight.defeated ? 'Terrassé ! Il reviendra lundi, déguisé en quelqu’un d’autre.' : boss.taunt}</p>
+        <p className="pt-1 text-[13px] text-muted">{fight.defeated
+          ? `Terrassé ! ${fight.forgiven > 0 ? `${fight.forgiven} oubli${fight.forgiven > 1 ? 's' : ''} pardonné${fight.forgiven > 1 ? 's' : ''}. ` : ''}Il reviendra lundi, déguisé en quelqu’un d’autre.`
+          : boss.taunt}</p>
       </div>
     </section>
   )

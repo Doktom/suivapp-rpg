@@ -23,7 +23,7 @@ export function Tasks() {
   const addList = (e: FormEvent) => {
     e.preventDefault()
     if (!newList.trim()) return
-    save('task_lists', { id: crypto.randomUUID(), name: newList.trim(), color: '#3F6B52' })
+    save('task_lists', { id: crypto.randomUUID(), name: newList.trim(), color: '#22B573' })
     setNewList('')
   }
 

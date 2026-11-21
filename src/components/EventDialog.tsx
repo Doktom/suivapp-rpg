@@ -10,7 +10,7 @@ export function EventDialog({ event, defaultDay, onClose }: { event: CalendarEve
   const [start, setStart] = useState(event?.start_time ?? '')
   const [end, setEnd] = useState(event?.end_time ?? '')
   const [note, setNote] = useState(event?.note ?? '')
-  const [color, setColor] = useState(event?.color ?? '#3F6B52')
+  const [color, setColor] = useState(event?.color ?? '#22B573')
   const badRange = !!start && !!end && end < start
 
   const submit = (e: FormEvent) => {

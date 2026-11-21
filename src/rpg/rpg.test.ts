@@ -3,7 +3,7 @@ import { indexValidations as buildIndex } from '../domain/schedule'
 import type { Habit, Validation } from '../domain/types'
 import type { LoggedSet } from '../training/types'
 import { dungeonLine, monsterFor, monsterHp, monstersDefeated, WINGS } from './dungeon'
-import { planCopy } from './suivappCopy'
+import { hasSuivappData, planCopy, vividColors } from './suivappCopy'
 import { bossFight, BOSSES, gearTier, heroClass, nextRank, rankTitle, tavernLine, weeklyBoss, xpCheer } from './lore'
 
 const habit = (over: Partial<Habit> = {}): Habit =>
@@ -70,10 +70,33 @@ describe('boss of the week', () => {
     expect(fight.defeated).toBe(false)
   })
 
+  const week = ['09', '10', '11', '12', '13', '14', '15'].map((d) => `2026-11-${d}`)
+
   it('is defeated when every habit of the week is done, and absent without habits', () => {
-    const days = ['09', '10', '11', '12', '13', '14', '15'].map((d) => validation(`2026-11-${d}`))
-    expect(bossFight([habit()], buildIndex(days), '2026-11-09').defeated).toBe(true)
-    expect(bossFight([], buildIndex([]), '2026-11-09')).toEqual({ maxHp: 0, hp: 0, defeated: false })
+    const fight = bossFight([habit()], buildIndex(week.map((d) => validation(d))), '2026-11-09')
+    expect(fight).toEqual({ maxHp: 7, hp: 0, defeated: true, forgiven: 0 })
+    expect(bossFight([], buildIndex([]), '2026-11-09')).toEqual({ maxHp: 0, hp: 0, defeated: false, forgiven: 0 })
+  })
+
+  it('forgives one missed day per habit, like a complete week', () => {
+    const fight = bossFight([habit()], buildIndex(week.slice(0, 6).map((d) => validation(d))), '2026-11-09')
+    expect(fight).toEqual({ maxHp: 7, hp: 0, defeated: true, forgiven: 1 })
+  })
+
+  it('holds a second miss on the same habit against you', () => {
+    const fight = bossFight([habit()], buildIndex(week.slice(0, 5).map((d) => validation(d))), '2026-11-09')
+    expect(fight.defeated).toBe(false)
+    expect(fight.hp).toBe(2)
+    expect(fight.forgiven).toBe(0)
+  })
+
+  it('counts the misses habit by habit, not all together', () => {
+    const a = habit({ id: 'a' })
+    const b = habit({ id: 'b' })
+    const missOnePerHabit = [...week.slice(1).map((d) => validation(d, { id: `a-${d}`, habit_id: 'a' })), ...week.slice(0, 6).map((d) => validation(d, { id: `b-${d}`, habit_id: 'b' }))]
+    expect(bossFight([a, b], buildIndex(missOnePerHabit), '2026-11-09')).toEqual({ maxHp: 14, hp: 0, defeated: true, forgiven: 2 })
+    const twoOnOneHabit = [...week.slice(2).map((d) => validation(d, { id: `a-${d}`, habit_id: 'a' })), ...week.map((d) => validation(d, { id: `b-${d}`, habit_id: 'b' }))]
+    expect(bossFight([a, b], buildIndex(twoOnOneHabit), '2026-11-09').defeated).toBe(false)
   })
 })
 
@@ -84,6 +107,19 @@ describe('tavern keeper', () => {
       expect(line.length).toBeGreaterThan(10)
       expect(tavernLine({ done, total, hour, seed: '2026-11-12' })).toBe(line)
     }
+  })
+
+  it('varies from one day to the next, with no broken text', () => {
+    const days = Array.from({ length: 60 }, (_, i) => `2026-11-${String(i + 1).padStart(2, '0')}`)
+    for (const [done, total, hour] of [[0, 0, 9], [0, 4, 8], [0, 4, 14], [0, 4, 21], [1, 5, 10], [2, 4, 10], [3, 4, 10], [4, 4, 10]]) {
+      const lines = days.map((seed) => tavernLine({ done, total, hour, seed }))
+      expect(new Set(lines).size).toBeGreaterThanOrEqual(4)
+      for (const line of lines) expect(line).not.toMatch(/undefined|NaN|\$\{/)
+    }
+  })
+
+  it('speaks of the last quest in the singular', () => {
+    for (const seed of ['a', 'b', 'c', 'd', 'e', 'f']) expect(tavernLine({ done: 3, total: 4, hour: 10, seed })).not.toMatch(/\b1 quêtes\b/)
   })
 
   it('counts what is left', () => {
@@ -97,6 +133,29 @@ describe('copy from Suivapp', () => {
   it('copies the tables under this app prefix and leaves device preferences alone', () => {
     const plan = planCopy(['suivapp:habits', 'suivapp:theme', 'suivapp:training-draft', 'suivapp-rpg:habits', 'other'])
     expect(plan).toEqual([{ from: 'suivapp:habits', to: 'suivapp-rpg:habits' }])
+  })
+
+  it('swaps the sober default colors for vivid ones, and keeps the colors the user picked', () => {
+    const families = JSON.stringify([{ id: 'a', color: '#4F8A6B' }, { id: 'b', color: '#b5613c' }, { id: 'c', color: '#123456' }])
+    expect(JSON.parse(vividColors('families', families))).toEqual([{ id: 'a', color: '#22B573' }, { id: 'b', color: '#FF6B3D' }, { id: 'c', color: '#123456' }])
+    expect(JSON.parse(vividColors('events', JSON.stringify([{ id: 'e', color: '#3F6B52', title: 'x' }])))).toEqual([{ id: 'e', color: '#22B573', title: 'x' }])
+  })
+
+  it('offers the copy only when Suivapp has habits and a profile', () => {
+    const store = (entries: Record<string, string>) => ({ getItem: (k: string) => entries[k] ?? null })
+    const one = JSON.stringify([{ id: 'x' }])
+    expect(hasSuivappData(store({ 'suivapp:habits': one, 'suivapp:profile': one }))).toBe(true)
+    expect(hasSuivappData(store({ 'suivapp:habits': one }))).toBe(false)
+    expect(hasSuivappData(store({ 'suivapp:habits': '[]', 'suivapp:profile': one }))).toBe(false)
+    expect(hasSuivappData(store({ 'suivapp:habits': 'oops', 'suivapp:profile': one }))).toBe(false)
+    expect(hasSuivappData(store({}))).toBe(false)
+  })
+
+  it('leaves other tables and unreadable data alone', () => {
+    const habits = JSON.stringify([{ id: 'h', color: '#4F8A6B' }])
+    expect(vividColors('habits', habits)).toBe(habits)
+    expect(vividColors('families', 'not json')).toBe('not json')
+    expect(vividColors('families', '{"color":"#4F8A6B"}')).toBe('{"color":"#4F8A6B"}')
   })
 })
 
