@@ -33,7 +33,7 @@ function LevelsEditor({ levels, steps, onChange }: { levels: Level[]; steps: Ste
     <fieldset className="flex flex-col gap-2">
       <legend className="pb-1 text-sm font-bold">Niveaux, du plus léger au plus complet</legend>
       {levels.map((level, i) => (
-        <div key={i} className="flex flex-col gap-1 rounded-lg bg-surface p-2">
+        <div key={i} className="flex flex-col gap-1 rounded-xl border-2 border-outline bg-surface p-2">
           <div className="flex gap-2">
             <input aria-label={`Nom du niveau ${i + 1}`} className={inputClass} value={level.name} onChange={(e) => update(i, { name: e.target.value })} />
             <input aria-label={`Précision du niveau ${i + 1}`} placeholder="ex. 5 min" className={inputClass} value={level.detail} onChange={(e) => update(i, { detail: e.target.value })} />
@@ -42,7 +42,7 @@ function LevelsEditor({ levels, steps, onChange }: { levels: Level[]; steps: Ste
           {steps && steps.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {steps.map((s) => (
-                <label key={s.id} className="flex min-h-9 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
+                <label key={s.id} className="flex min-h-9 items-center gap-1.5 rounded-lg border-2 border-line bg-chip px-2 text-[13px] font-bold">
                   <input type="checkbox" checked={level.steps.includes(s.id)} onChange={() => toggleStep(i, s.id)} />
                   {s.name || '(étape)'}
                 </label>
@@ -223,7 +223,7 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
           <input className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
         </Field>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className={`grid gap-3 ${tracking === 'quantity' ? 'grid-cols-3' : tracking === 'duration' ? 'grid-cols-2' : 'grid-cols-1'}`}>
           <Field label="Suivi">
             <select className={inputClass} value={tracking} onChange={(e) => changeTracking(e.target.value as Tracking)}>
               {TRACKINGS.map((t) => <option key={t} value={t}>{TRACKING_LABELS[t]}</option>)}
@@ -261,7 +261,7 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
         {frequencyChoice === 'weekdays' && (
           <div className="flex justify-between">
             {WEEKDAYS.map((label, d) => (
-              <button key={d} type="button" aria-label={WEEKDAY_NAMES[d]} aria-pressed={days.includes(d)} onClick={() => toggleDay(d)} className={`size-11 rounded-full text-sm font-bold ${days.includes(d) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
+              <button key={d} type="button" aria-label={WEEKDAY_NAMES[d]} aria-pressed={days.includes(d)} onClick={() => toggleDay(d)} className={`size-11 rounded-full border-[2.5px] border-outline text-sm font-extrabold ${days.includes(d) ? 'bg-gold text-onsticker' : 'bg-surface'}`}>
                 {label}
               </button>
             ))}
@@ -288,7 +288,7 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
             <legend className="text-sm font-bold">Moments de la journée</legend>
             <div className="flex gap-2">
               {MOMENTS.map((m) => (
-                <button key={m} type="button" aria-pressed={moments.includes(m)} onClick={() => toggleMoment(m)} className={`min-h-11 flex-1 rounded-lg text-sm font-bold ${moments.includes(m) ? 'bg-accent text-onaccent' : 'bg-chip'}`}>
+                <button key={m} type="button" aria-pressed={moments.includes(m)} onClick={() => toggleMoment(m)} className={`min-h-11 flex-1 rounded-xl border-[2.5px] border-outline text-sm font-extrabold ${moments.includes(m) ? 'bg-gold text-onsticker' : 'bg-surface'}`}>
                   {MOMENT_LABELS[m]}
                 </button>
               ))}
@@ -308,17 +308,17 @@ export function HabitDialog({ habit, onClose }: { habit: Partial<Habit> | null; 
           </Field>
         </div>
 
-        {moments.length === 0 && <p className="text-sm text-warn">Choisissez au moins un moment.</p>}
-        {tracking === 'routine' && steps.every((s) => !s.name.trim()) && <p className="text-sm text-warn">Ajoutez au moins une étape.</p>}
+        {moments.length === 0 && <p className="text-sm text-warn">Choisis au moins un moment.</p>}
+        {tracking === 'routine' && steps.every((s) => !s.name.trim()) && <p className="text-sm text-warn">Ajoute au moins une étape.</p>}
         <Button type="submit" variant="primary" disabled={invalid}>Enregistrer</Button>
         <Button onClick={saveAsTemplate} disabled={invalid}>Enregistrer comme modèle</Button>
         {existingId && !confirmDelete && (
-          <Button className="text-warn" onClick={() => setConfirmDelete(true)}>Supprimer la quête…</Button>
+          <Button className="text-warn" onClick={() => setConfirmDelete(true)}>Rayer la quête du livre…</Button>
         )}
         {existingId && confirmDelete && (
-          <div role="alert" className="flex flex-col gap-2 rounded-lg border border-warn p-3">
+          <div role="alert" className="flex flex-col gap-2 rounded-xl border-[2.5px] border-warn bg-surface p-3">
             <p className="text-sm">
-              Supprimer « {habit?.name} » et tout son historique (validations, écarts, XP gagnée) ? C'est définitif. Pour simplement l'arrêter, utilisez plutôt « Archiver ».
+              Rayer « {habit?.name} » du livre, avec tout son historique (validations, écarts, XP gagnée) ? C'est définitif, même pour un héros. Pour simplement la mettre de côté, utilise plutôt « Archiver ».
             </p>
             <div className="flex gap-2">
               <Button className="!bg-warn !text-onaccent" onClick={() => { removeHabit(habit as Habit); onClose() }}>Supprimer définitivement</Button>
