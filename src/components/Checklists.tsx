@@ -56,19 +56,20 @@ export function Checklists() {
   return (
     <section className="max-w-3xl pt-8">
       <div className="flex items-center justify-between gap-3 pb-2">
-        <SectionTitle>Checklists réutilisables</SectionTitle>
-        <Button onClick={() => setCreating(true)}>Nouvelle checklist</Button>
+        <SectionTitle>📜 Parchemins réutilisables</SectionTitle>
+        <Button onClick={() => setCreating(true)}>Nouveau parchemin</Button>
       </div>
-      {data.checklists.length === 0 && <p className="border-t border-line py-4 text-muted">Aucune checklist.</p>}
+      <div className="card px-3 [&>*:first-child]:border-t-0">
+      {data.checklists.length === 0 && <p className="py-4 text-muted">Aucun parchemin. Une checklist qu’on relance, c’est une mission qu’on n’oublie pas.</p>}
       {data.checklists.map((c) => (
-        <div key={c.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
+        <div key={c.id} className="flex flex-wrap items-center gap-2 border-t-2 border-dashed border-line py-2.5">
           <div className="min-w-48 flex-1">
             <div className="font-bold">{c.name}</div>
-            <div className="text-[13px] text-muted">
+            <div className="text-[13px] font-semibold text-muted">
               {c.items.length} éléments{c.recurrence ? ` · ↻ ${describeRecurrence(c.recurrence)}` : ''}{running(c) ? ' · en cours' : ''}
             </div>
           </div>
-          <button type="button" className="min-h-11 px-2 text-[13px] text-muted" onClick={() => setEditing(c)}>Modifier</button>
+          <button type="button" className="min-h-11 px-2 text-[13px] font-bold text-muted underline" onClick={() => setEditing(c)}>Modifier</button>
           <Button
             disabled={launched.includes(c.id)}
             onClick={() => {
@@ -80,6 +81,7 @@ export function Checklists() {
           </Button>
         </div>
       ))}
+      </div>
       {(editing || creating) && <ChecklistDialog checklist={editing} onClose={() => { setEditing(null); setCreating(false) }} />}
     </section>
   )
