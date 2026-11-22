@@ -71,7 +71,7 @@ function SessionDialog({ session, onClose }: { session: DanceSession; onClose: (
             <legend className="pb-1 text-sm font-bold">Figures travaillées</legend>
             <div className="flex flex-wrap gap-1.5">
               {figures.map((f) => (
-                <label key={f.id} className="flex min-h-9 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
+                <label key={f.id} className="flex min-h-11 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
                   <input type="checkbox" checked={draft.figure_ids.includes(f.id)} onChange={() => toggleFigure(f.id)} />
                   {f.name}
                 </label>

@@ -45,9 +45,9 @@ const STAT_TONES = ['gold', 'teal', 'coral', 'sky', 'pink'] as const
 function Stat({ label, display, value, previous, tone }: { label: string; display: string; value: number; previous: number; tone: number }) {
   return (
     <div className="card p-3" style={{ background: `color-mix(in srgb, var(--color-${STAT_TONES[tone % STAT_TONES.length]}) 24%, var(--color-surface))` }}>
-      <p className="text-[13px] font-bold text-muted">{label}</p>
+      <p className="text-[13px] font-extrabold text-ink">{label}</p>
       <p className="font-display text-[26px] leading-tight tabular-nums">{display}</p>
-      <p className="flex items-center gap-2 text-[12px] text-muted"><Delta current={value} previous={previous} /></p>
+      <p className="flex items-center gap-2 text-[12px] font-bold text-ink"><Delta current={value} previous={previous} /></p>
     </div>
   )
 }
@@ -167,7 +167,7 @@ export function Trophies() {
           `${today}-${unlocked}`,
         )
 
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[44px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
 
   return (
     <div className="flex flex-col gap-5">

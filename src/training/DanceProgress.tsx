@@ -96,7 +96,7 @@ export function DanceFigures() {
                   </button>
                   {i > 0 && <button type="button" aria-label={`${f.name} : revenir à ${FIGURE_LABELS[STATUSES[i - 1]]}`} className="size-11 flex-none text-muted" onClick={() => move(f, STATUSES[i - 1])}>←</button>}
                   {i < 2 && (
-                    <Button className="!min-h-9 !px-3 text-[13px]" variant={i === 1 ? 'primary' : 'ghost'} onClick={() => move(f, STATUSES[i + 1])}>
+                    <Button className="!min-h-11 !px-3 text-[13px]" variant={i === 1 ? 'primary' : 'ghost'} onClick={() => move(f, STATUSES[i + 1])}>
                       {i === 0 ? 'Je m’y mets' : 'Maîtrisée !'}
                     </Button>
                   )}

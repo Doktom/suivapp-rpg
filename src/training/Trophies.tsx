@@ -52,7 +52,7 @@ export function WeekStrip({ onOpen }: { onOpen: () => void }) {
     current.danceMinutes ? `${formatMinutes(current.danceMinutes)} de danse` : '',
   ].filter(Boolean)
   return (
-    <button type="button" onClick={onOpen} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 card px-3 py-2 text-left">
+    <button type="button" onClick={onOpen} className="card flex min-h-11 w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left">
       <span className="text-[12px] font-extrabold tracking-wide text-muted uppercase">Cette semaine</span>
       <span className="min-w-0 flex-1 text-sm">{parts.join(' · ')}</span>
       <span className="sticker">+{current.xp} XP</span>

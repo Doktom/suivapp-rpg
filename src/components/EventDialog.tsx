@@ -49,7 +49,7 @@ export function EventDialog({ event, defaultDay, onClose }: { event: CalendarEve
           <textarea className={`${inputClass} py-2`} rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
         </Field>
         <Field label="Couleur">
-          <input type="color" className="size-11 rounded-lg bg-transparent" value={color} onChange={(e) => setColor(e.target.value)} />
+          <input type="color" className="size-11 rounded-xl border-2 border-outline bg-transparent" value={color} onChange={(e) => setColor(e.target.value)} />
         </Field>
         {badRange && <p className="text-sm text-warn">La fin doit venir après le début.</p>}
         <Button type="submit" variant="primary" disabled={badRange}>Enregistrer</Button>

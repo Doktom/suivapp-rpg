@@ -102,7 +102,7 @@ function RoutineDialog({ routine, onClose }: { routine: TrainingSession; onClose
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {items.map((item) => (
-                  <label key={item.id} className="flex min-h-9 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
+                  <label key={item.id} className="flex min-h-11 items-center gap-1.5 rounded-md bg-chip px-2 text-[13px]">
                     <input type="checkbox" checked={level.items.includes(item.id)} onChange={() => toggleLevelItem(li, item.id)} />
                     {name(item.exercise_id)}
                   </label>

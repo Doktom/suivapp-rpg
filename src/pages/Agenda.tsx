@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { EventDialog } from '../components/EventDialog'
 import { TaskDialog } from '../components/TaskDialog'
-import { Button, inputClass, ProgressBar, tint, chipClass } from '../components/ui'
+import { Button, inputClass, ProgressBar, Sticker, tint, chipClass } from '../components/ui'
 import { useStore, useStreaks, useToday, useValidationIndex } from '../data/store'
 import { agendaItems, quotaLines, type AgendaFilters, type AgendaItem, type ItemKind, type ItemState } from '../domain/agenda'
 import { addDays, addMonths, firstOfMonth, formatLongDay, formatMonth, formatShortDay, mondayOf } from '../domain/date'
 import { MOMENT_LABELS, MOMENTS, type CalendarEvent } from '../domain/types'
+import { KeeperSays } from '../rpg/Hero'
 
 type View = 'day' | 'week' | 'month'
 
@@ -43,11 +44,11 @@ function EventBlock({ item, onEvent, large = false }: { item: AgendaItem; onEven
       type="button"
       // Training sessions are shown here too; they open in the Entraînement tab.
       onClick={() => (item.event ? onEvent(item.event) : (window.location.hash = '#training'))}
-      className={`flex w-full flex-col rounded-lg px-2.5 py-1.5 text-left ${large ? 'min-h-14' : 'min-h-11'}`}
-      style={{ background: tint(item.color, 16), borderLeft: `4px solid ${item.color}` }}
+      className={`flex w-full flex-col rounded-xl border-2 border-outline px-2.5 py-1.5 text-left ${large ? 'min-h-14' : 'min-h-11'}`}
+      style={{ background: tint(item.color, 34), borderLeft: `8px solid ${item.color}` }}
     >
-      <span className="text-[12px] font-extrabold text-muted tabular-nums">{item.when}</span>
-      <span className={`font-bold leading-tight ${large ? 'text-base' : 'text-sm'}`}>{item.kind === 'training' && item.state === 'done' ? `✓ ${item.title}` : item.title}</span>
+      <span className="text-[12px] font-extrabold text-ink tabular-nums">{item.when}</span>
+      <span className={`font-extrabold leading-tight ${large ? 'text-base' : 'text-sm'}`}>{item.kind === 'training' && item.state === 'done' ? `✓ ${item.title}` : item.title}</span>
       {large && item.event?.note && <span className="text-[13px] text-muted">{item.event.note}</span>}
     </button>
   )
@@ -62,8 +63,8 @@ const toggleLabel = (item: AgendaItem) => `${item.state === 'done' ? 'Annuler' :
 function Pill({ item, onToggle }: { item: AgendaItem; onToggle: Toggle }) {
   const done = item.state === 'done'
   const bad = item.state === 'missed' || item.state === 'late'
-  const cls = `inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-full py-1 pr-3 pl-1.5 text-left text-[13px] ${done ? 'text-muted' : bad ? 'text-warn' : ''}`
-  const style = { background: done ? 'var(--color-chip)' : bad ? tint('var(--color-warn)', 12) : tint(item.color, 14) }
+  const cls = `inline-flex min-h-11 max-w-full items-center gap-1.5 rounded-full border-2 py-1 pr-3 pl-1.5 text-left text-[13px] font-bold ${done ? 'border-line text-muted' : bad ? 'border-warn' : 'border-outline'}`
+  const style = { background: done ? 'var(--color-chip)' : bad ? tint('var(--color-warn)', 12) : tint(item.color, 20) }
   const content = (
     <>
       <StateIcon item={item} />
@@ -82,7 +83,7 @@ function Pill({ item, onToggle }: { item: AgendaItem; onToggle: Toggle }) {
 function Row({ item, onToggle }: { item: AgendaItem; onToggle: Toggle }) {
   const bad = item.state === 'missed' || item.state === 'late'
   return (
-    <div className="flex min-h-11 items-center gap-3 border-t border-line">
+    <div className="flex min-h-11 items-center gap-3 border-t-2 border-dashed border-line">
       {onToggle ? (
         <button type="button" aria-pressed={item.state === 'done'} aria-label={toggleLabel(item)} onClick={() => onToggle(item)} className="-ml-3 flex size-11 flex-none items-center justify-center">
           <StateIcon item={item} />
@@ -90,7 +91,7 @@ function Row({ item, onToggle }: { item: AgendaItem; onToggle: Toggle }) {
       ) : (
         <StateIcon item={item} />
       )}
-      <span className={`min-w-0 flex-1 ${item.state === 'done' ? 'text-muted' : ''}`}>{item.title}</span>
+      <span className={`min-w-0 flex-1 font-bold ${item.state === 'done' ? 'text-muted line-through' : ''}`}>{item.title}</span>
       {/^\d/.test(item.when) && <span className="text-[13px] text-muted tabular-nums">{item.when}</span>}
       {item.state !== 'todo' && <span className={`text-[12px] ${bad ? 'text-warn' : 'text-muted'}`}>{STATE_LABELS[item.state]}</span>}
     </div>
@@ -130,9 +131,9 @@ function WeekDay({ day, index, items, today, onOpen, onEvent, onToggle }: {
   const { done, total } = habitProgress(items)
   const isToday = day === today
   return (
-    <div className={`flex flex-col gap-3 card p-3 sm:flex-row sm:gap-4 ${isToday ? 'border-accent' : ''} ${day < today ? 'opacity-80' : ''}`}>
-      <button type="button" onClick={onOpen} aria-label={`Voir le ${formatLongDay(day)}`} className="flex flex-none items-center gap-3 text-left sm:w-24 sm:flex-col sm:items-start sm:gap-0.5">
-        <span className={`text-[13px] font-extrabold ${isToday ? 'text-accent' : 'text-muted'}`}>{isToday ? "Aujourd'hui" : WEEK_LONG[index]}</span>
+    <div className={`card flex flex-col gap-3 p-3 sm:flex-row sm:gap-4 `} style={isToday ? { boxShadow: 'inset 10px 0 0 var(--color-gold), 3px 3px 0 var(--color-outline)' } : undefined}>
+      <button type="button" onClick={onOpen} aria-label={`Voir le ${formatLongDay(day)}`} className="flex min-h-11 flex-none items-center gap-3 text-left sm:w-24 sm:flex-col sm:items-start sm:gap-0.5">
+        {isToday ? <Sticker tone="gold">Aujourd’hui</Sticker> : <span className="text-[13px] font-extrabold text-muted">{WEEK_LONG[index]}</span>}
         <span className="font-display text-2xl leading-none tabular-nums">{Number(day.slice(8))}</span>
         <span className="text-[12px] text-muted">{formatShortDay(day).replace(/^\d+\s/, '')}</span>
         {total > 0 && (
@@ -143,7 +144,7 @@ function WeekDay({ day, index, items, today, onOpen, onEvent, onToggle }: {
         )}
       </button>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        {items.length === 0 && <p className="pt-1 text-[13px] text-muted">Rien de prévu.</p>}
+        {items.length === 0 && <p className="pt-1 text-[13px] font-semibold text-muted">Rien au programme. La taverne est calme.</p>}
         {events.length > 0 && (
           <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
             {events.map((e) => <EventBlock key={e.key} item={e} onEvent={onEvent} />)}
@@ -177,13 +178,13 @@ function DayView({ items, day, today, onEvent, onToggle }: {
   const toggle = (item: AgendaItem): Toggle => (item.kind === 'habit' && day > today ? null : (i) => onToggle(i, day))
   const section = (title: string, children: React.ReactNode) => (
     <section className="pb-4">
-      <h2 className="pb-1 text-[13px] font-extrabold tracking-wide text-muted uppercase">{title}</h2>
+      <h2 className="pb-1 font-display text-lg">{title}</h2>
       {children}
     </section>
   )
   return (
     <div className="max-w-3xl">
-      {items.length === 0 && <p className="border-t border-line py-4 text-muted">Rien de prévu ce jour.</p>}
+      {items.length === 0 && <KeeperSays>Rien au programme ce jour-là. Même les héros ont droit à une journée de pause.</KeeperSays>}
       {events.length > 0 && section('Événements', <div className="flex flex-col gap-2">{events.map((e) => <EventBlock key={e.key} item={e} onEvent={onEvent} large />)}</div>)}
       {moments.map((g) => <div key={g.moment}>{section(MOMENT_LABELS[g.moment], g.items.map((i) => <Row key={i.key} item={i} onToggle={toggle(i)} />))}</div>)}
       {tasks.length > 0 && section('Missions', tasks.map((i) => <Row key={i.key} item={i} onToggle={toggle(i)} />))}
@@ -202,11 +203,12 @@ function MonthCell({ day, items, today, inMonth, onOpen }: { day: string; items:
       type="button"
       onClick={onOpen}
       aria-label={`${formatLongDay(day)} : ${events.length} événements, ${done} sur ${total} quêtes, ${tasks.length} missions`}
-      className={`flex min-h-20 min-w-0 flex-col gap-1 rounded-lg border p-1.5 text-left lg:min-h-28 ${isToday ? 'border-accent bg-surface' : 'border-line bg-surface'} ${inMonth ? '' : 'opacity-35'}`}
+      className={`flex min-h-20 min-w-0 flex-col gap-1 rounded-xl border-2 border-outline p-1.5 text-left lg:min-h-28 ${isToday ? '' : 'bg-surface'} ${inMonth ? '' : 'opacity-35'}`}
+      style={isToday ? { boxShadow: 'inset 0 7px 0 var(--color-gold)' } : undefined}
     >
-      <span className={`flex size-6 items-center justify-center rounded-full text-[13px] font-extrabold tabular-nums ${isToday ? 'bg-accent text-onaccent' : ''}`}>{Number(day.slice(8))}</span>
+      <span className={`flex size-6 items-center justify-center rounded-full text-[13px] font-extrabold tabular-nums ${isToday ? 'border-2 border-outline bg-gold text-onsticker' : ''}`}>{Number(day.slice(8))}</span>
       {events.slice(0, 2).map((e) => (
-        <span key={e.key} className="w-full truncate rounded px-1 text-[11px] leading-5 font-bold lg:text-[12px]" style={{ background: tint(e.color, 18), borderLeft: `3px solid ${e.color}` }}>
+        <span key={e.key} className="w-full truncate rounded-md px-1 text-[11px] leading-5 font-extrabold lg:text-[12px]" style={{ background: tint(e.color, 34), borderLeft: `4px solid ${e.color}` }}>
           {e.title}
         </span>
       ))}
@@ -258,7 +260,7 @@ export function Agenda() {
   const monday = mondayOf(anchor)
   const title =
     view === 'day' ? formatLongDay(anchor) : view === 'week' ? `${formatShortDay(monday)} – ${formatShortDay(addDays(monday, 6))}` : formatMonth(anchor)
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[44px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
   const chip = (active: boolean) => chipClass(active)
   const openDay = (day: string) => {
     setAnchor(day)
@@ -296,11 +298,11 @@ export function Agenda() {
             {KIND_LABELS[k]}
           </button>
         ))}
-        <select aria-label="Filtrer par famille" className={`${inputClass} !min-h-9 !w-auto`} value={filters.familyId} onChange={(e) => setFilters({ ...filters, familyId: e.target.value, listId: '' })}>
+        <select aria-label="Filtrer par famille" className={`${inputClass} !min-h-11 !w-auto`} value={filters.familyId} onChange={(e) => setFilters({ ...filters, familyId: e.target.value, listId: '' })}>
           <option value="">Toutes les familles</option>
           {[...data.families].sort((a, b) => a.position - b.position).map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
         </select>
-        <select aria-label="Filtrer par liste" className={`${inputClass} !min-h-9 !w-auto`} value={filters.listId} onChange={(e) => setFilters({ ...filters, listId: e.target.value, familyId: '' })}>
+        <select aria-label="Filtrer par liste" className={`${inputClass} !min-h-11 !w-auto`} value={filters.listId} onChange={(e) => setFilters({ ...filters, listId: e.target.value, familyId: '' })}>
           <option value="">Toutes les listes</option>
           {data.task_lists.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
         </select>
@@ -308,13 +310,13 @@ export function Agenda() {
 
       {view !== 'month' && quota.length > 0 && (
         <section aria-label="Cette semaine" className="mb-4 card p-3">
-          <h2 className="pb-1.5 text-[12px] font-extrabold tracking-wide text-muted uppercase">Cette semaine · sans jour fixe</h2>
+          <h2 className="pb-1.5 font-display text-base">Quêtes à la carte · cette semaine</h2>
           <div className="grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {quota.map((q) => (
               <div key={q.habit.id} className="flex items-center gap-2 text-sm">
                 <span className="min-w-0 flex-1 truncate">{q.habit.name}</span>
                 <div className="w-16"><ProgressBar thin percent={(q.done / q.quota) * 100} /></div>
-                <span className={`w-24 text-right text-[13px] tabular-nums ${q.done >= q.quota ? 'font-bold text-accent' : 'text-muted'}`}>{q.done} / {q.quota}{q.monthly ? ' ce mois' : ''}</span>
+                <span className={`w-24 text-right text-[13px] tabular-nums ${q.done >= q.quota ? 'font-extrabold text-accent' : 'font-semibold text-muted'}`}>{q.done} / {q.quota}{q.monthly ? ' ce mois' : ''}</span>
               </div>
             ))}
           </div>
@@ -322,7 +324,7 @@ export function Agenda() {
       )}
 
       {taskBlock && (
-        <p role="status" className="mb-3 rounded-lg bg-chip px-3 py-2 text-[13px]">
+        <p role="status" className="card mb-3 px-3 py-2 text-[13px] font-bold">
           « {taskBlock} » est un bloc : coche ses étapes dans l'onglet Missions.{' '}
           <button type="button" className="font-bold underline" onClick={() => setTaskBlock(null)}>OK</button>
         </p>
@@ -367,7 +369,7 @@ export function Agenda() {
           ))}
           <span className="flex items-center gap-1.5">
             <StateIcon item={{ key: 't', refId: 't', kind: 'task', title: '', when: '', order: '', state: 'todo', color: '#596159' }} />
-            tâche
+            mission
           </span>
         </div>
       )}

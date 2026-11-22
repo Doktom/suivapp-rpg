@@ -14,7 +14,7 @@ const THEMES: [ThemeChoice, string][] = [
 
 export function ThemeSetting() {
   const [theme, setTheme] = useState(readTheme)
-  const pill = (active: boolean) => `min-h-[38px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
+  const pill = (active: boolean) => `min-h-[44px] rounded-md px-3 text-[13px] font-bold ${active ? 'bg-surface' : ''}`
   return (
     <fieldset className="flex flex-col gap-1">
       <legend className="pb-1 text-sm font-bold">Thème (sur cet appareil)</legend>
@@ -47,11 +47,11 @@ export function XpSetting() {
   const update = (patch: Partial<XpSettings>) => save('profile', { ...profile, xp: { ...xp, ...patch } })
   return (
     <section>
-      <h2 className="pt-8 pb-1 font-display text-lg">Valeurs d'XP</h2>
-      <p className="pb-3 text-[13px] text-muted">S'appliquent aux prochaines validations ; l'XP déjà gagnée ne change pas.</p>
+      <h2 className="pb-1 font-display text-xl">✨ Valeurs d’XP</h2>
+      <p className="pb-3 text-[13px] font-semibold text-muted">S’appliquent aux prochaines validations ; l’XP déjà gagnée ne change pas.</p>
       <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
         {XP_FIELDS.map(([key, label]) => (
-          <label key={key} className="flex min-h-11 items-center justify-between gap-3 border-t border-line text-sm">
+          <label key={key} className="flex min-h-11 items-center justify-between gap-3 border-t-2 border-dashed border-line text-sm font-bold">
             {label}
             <input
               type="number"
@@ -63,7 +63,7 @@ export function XpSetting() {
             />
           </label>
         ))}
-        <label className="flex min-h-11 items-center justify-between gap-3 border-t border-line text-sm">
+        <label className="flex min-h-11 items-center justify-between gap-3 border-t-2 border-dashed border-line text-sm font-bold">
           Bonus de série (+10 % / +25 % / +50 %)
           <input type="checkbox" className="size-5" checked={xp.streak_bonus} onChange={(e) => update({ streak_bonus: e.target.checked })} />
         </label>
@@ -90,8 +90,8 @@ export function ExportSetting() {
   const count = data.habits.length + data.validations.length + data.tasks.length + data.events.length
   return (
     <section>
-      <h2 className="pt-8 pb-1 font-display text-lg">Mes données</h2>
-      <p className="pb-3 text-[13px] text-muted">Un fichier JSON avec toutes vos habitudes, validations, tâches et événements ({count.toLocaleString('fr-FR')} éléments), à garder en sauvegarde.</p>
+      <h2 className="pb-1 font-display text-xl">🗝️ Le coffre-fort</h2>
+      <p className="pb-3 text-[13px] font-semibold text-muted">Un fichier JSON avec tes quêtes, validations, missions et événements ({count.toLocaleString('fr-FR')} éléments), à garder précieusement.</p>
       <Button onClick={download}>Exporter mes données</Button>
     </section>
   )
@@ -116,16 +116,16 @@ export function ReminderSetting() {
   }
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="pt-8 font-display text-lg">Rappels (sur cet appareil)</h2>
+      <h2 className="font-display text-xl">🔔 Rappels (sur cet appareil)</h2>
       {!supported ? (
-        <p className="text-[13px] text-muted">Ce navigateur ne gère pas les notifications. Sur iPhone, ajoutez d'abord l'app à l'écran d'accueil.</p>
+        <p className="text-[13px] text-muted">Ce navigateur ne gère pas les notifications. Sur iPhone, ajoute d’abord l’app à l’écran d’accueil.</p>
       ) : (
         <>
           <label className="flex min-h-11 items-center gap-3">
             <input type="checkbox" className="size-5" checked={settings.enabled} onChange={toggle} />
             <span>Activer les rappels</span>
           </label>
-          {permission === 'denied' && <p role="alert" className="text-sm text-warn">Les notifications sont bloquées pour ce site : autorisez-les dans les réglages du navigateur.</p>}
+          {permission === 'denied' && <p role="alert" className="text-sm text-warn">Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur.</p>}
           {settings.enabled && (
             <div className="flex flex-wrap gap-3">
               {(['morning', 'evening'] as const).map((slot) => (
@@ -137,7 +137,7 @@ export function ReminderSetting() {
             </div>
           )}
           <p className="text-[13px] text-muted">
-            Le rappel résume ce qu'il reste à faire (habitudes, séance, cours). Sans serveur, il s'affiche quand l'app est ouverte ou installée et active en arrière-plan : au premier lancement après l'heure choisie sinon. Laisser un champ vide désactive ce rappel.
+            Le rappel résume ce qu’il reste à faire (quêtes, séance, cours). Sans serveur, il s'affiche quand l'app est ouverte ou installée et active en arrière-plan : au premier lancement après l'heure choisie sinon. Laisser un champ vide désactive ce rappel.
           </p>
         </>
       )}

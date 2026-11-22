@@ -44,7 +44,7 @@ function Frame({ data, title, unit, children }: { data: Datum[]; title: string; 
       <figcaption className="text-sm font-bold">{title} <span className="font-normal text-muted">({unit})</span></figcaption>
       <div ref={ref} className="relative w-full">{children(width)}</div>
       <details className="text-[13px] text-muted">
-        <summary className="min-h-9 cursor-pointer leading-9">Voir en tableau</summary>
+        <summary className="min-h-11 cursor-pointer leading-11">Voir en tableau</summary>
         <table className="w-full text-left">
           <tbody>
             {data.map((d, i) => (

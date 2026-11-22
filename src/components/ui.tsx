@@ -118,7 +118,7 @@ export const tint = (color: string | undefined, percent = 12) => `color-mix(in s
 
 /** Look of a pill button (filters, levels, sub-views): outlined, gold when pressed. */
 export const chipClass = (active: boolean, size: 'sm' | 'md' = 'sm') =>
-  `flex items-center gap-1.5 rounded-full border-2 border-outline font-extrabold ${size === 'md' ? 'min-h-11 px-4 text-sm' : 'min-h-9 px-3 text-[13px]'} ${active ? 'bg-gold text-onsticker' : 'bg-surface text-ink'}`
+  `flex items-center gap-1.5 rounded-full border-2 border-outline font-extrabold ${size === 'md' ? 'min-h-11 px-4 text-sm' : 'min-h-11 px-3 text-[13px]'} ${active ? 'bg-gold text-onsticker' : 'bg-surface text-ink'}`
 
 /** A row of pill buttons to switch between views. */
 export function ChipTabs<T extends string>({ value, options, onChange, label }: { value: T; options: [T, string][]; onChange: (v: T) => void; label: string }) {
@@ -173,7 +173,7 @@ export function FamilyCard({
     <section id={id} className="card shrink-0 scroll-mt-4 overflow-hidden">
       <h2 className="flex items-baseline gap-2 border-b-[2.5px] border-outline px-3 py-2" style={{ background: tint(color, 38) }}>
         <span className="font-display text-lg">{name}</span>
-        {stat && <span className="text-[13px] font-bold text-muted">· {stat}</span>}
+        {stat && <span className="text-[13px] font-extrabold text-ink">· {stat}</span>}
         {count !== undefined && <span className="ml-auto text-[13px] font-extrabold tabular-nums">{count}</span>}
       </h2>
       <div className="px-3 [&>*:first-child]:border-t-0">{children}</div>

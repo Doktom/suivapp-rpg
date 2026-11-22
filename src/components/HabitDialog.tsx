@@ -42,7 +42,7 @@ function LevelsEditor({ levels, steps, onChange }: { levels: Level[]; steps: Ste
           {steps && steps.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {steps.map((s) => (
-                <label key={s.id} className="flex min-h-9 items-center gap-1.5 rounded-lg border-2 border-line bg-chip px-2 text-[13px] font-bold">
+                <label key={s.id} className="flex min-h-11 items-center gap-1.5 rounded-lg border-2 border-line bg-chip px-2 text-[13px] font-bold">
                   <input type="checkbox" checked={level.steps.includes(s.id)} onChange={() => toggleStep(i, s.id)} />
                   {s.name || '(étape)'}
                 </label>

@@ -140,7 +140,7 @@ export function MobilityRunner({ session, draft, setDraft, onClose }: {
         </div>
         <div className="flex seg text-[13px] font-bold">
           {(['guided', 'check'] as const).map((m) => (
-            <button key={m} type="button" aria-pressed={draft.mode === m} className={`min-h-[38px] rounded-md px-3 ${draft.mode === m ? 'bg-surface' : ''}`} onClick={() => update(m === 'check' ? { mode: 'check', phase: 'paused', phase_end: null, paused: null } : { mode: 'guided', ...enter(steps[draft.step], Date.now()) })}>
+            <button key={m} type="button" aria-pressed={draft.mode === m} className={`min-h-[44px] rounded-md px-3 ${draft.mode === m ? 'bg-surface' : ''}`} onClick={() => update(m === 'check' ? { mode: 'check', phase: 'paused', phase_end: null, paused: null } : { mode: 'guided', ...enter(steps[draft.step], Date.now()) })}>
               {m === 'guided' ? 'Guidé' : 'Coche'}
             </button>
           ))}

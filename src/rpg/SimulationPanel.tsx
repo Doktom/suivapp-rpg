@@ -83,7 +83,7 @@ export function SimulationPanel() {
         <div className="flex flex-col gap-2">
           <h3 className="font-display text-base">Quel héros es-tu pendant ces semaines ?</h3>
           <ChipTabs label="Assiduité" value={assiduity} options={ASSIDUITIES.map((a) => [a.id, a.label] as [Assiduity['id'], string])} onChange={setAssiduity} />
-          <p className="text-[13px] font-semibold text-muted">{chosen.hint}.</p>
+          <p className="text-[13px] font-bold text-ink">{chosen.hint}.</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -91,7 +91,7 @@ export function SimulationPanel() {
           <div className="flex flex-wrap gap-2">
             {WEEKS.map((w) => <Button key={w} disabled={!hasHabits} onClick={() => play(w)}>{w} {w > 1 ? 'semaines' : 'semaine'}</Button>)}
           </div>
-          <p className="text-[13px] font-semibold text-muted">Les journées sont jouées selon ton assiduité (quêtes, missions, séances de salle), puis l’horloge avance. Le dernier jour reste vierge pour que tu le joues toi-même.</p>
+          <p className="text-[13px] font-bold text-ink">Les journées sont jouées selon ton assiduité (quêtes, missions, séances de salle), puis l’horloge avance. Le dernier jour reste vierge pour que tu le joues toi-même.</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ export function SimulationPanel() {
             <Button onClick={() => travel(1)}>Demain</Button>
             <Button onClick={() => travel(7)}>Dans une semaine</Button>
           </div>
-          <p className="text-[13px] font-semibold text-muted">Rien n’est coché pendant le saut : les jours passés comptent comme manqués. Utile pour voir le boss se reposer ou une série se briser.</p>
+          <p className="text-[13px] font-bold text-ink">Rien n’est coché pendant le saut : les jours passés comptent comme manqués. Utile pour voir le boss se reposer ou une série se briser.</p>
         </div>
 
         {report && <p role="status" className="rounded-xl border-2 border-outline bg-surface p-2 text-sm font-bold">{report}</p>}

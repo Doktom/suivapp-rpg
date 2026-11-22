@@ -3,7 +3,7 @@ import { ExportSetting, ReminderSetting, ThemeSetting, XpSetting } from '../comp
 import { CopyFromSuivapp } from '../rpg/CopyFromSuivapp'
 import { SimulationPanel } from '../rpg/SimulationPanel'
 import { isSandbox } from '../data/sandbox'
-import { Button, Field, inputClass } from '../components/ui'
+import { Button, Field, inputClass, SectionTitle } from '../components/ui'
 import { supabase } from '../data/repo'
 import { useStore } from '../data/store'
 import type { Family } from '../domain/types'
@@ -42,42 +42,52 @@ export function Settings() {
     removeFamily(family)
   }
 
+  const panel = 'card mt-5 p-3 [&_h2]:pt-0'
+  const small = 'min-h-11 rounded-xl border-2 border-outline bg-surface text-sm font-extrabold disabled:opacity-30'
   return (
     <div className="max-w-2xl">
-      <h1 className="pb-5 font-display text-[30px] leading-tight">L’arrière-boutique</h1>
+      <h1 className="pb-1 font-display text-[30px] leading-tight">L’arrière-boutique</h1>
+      <p className="text-sm font-bold text-muted">Ici, on règle la taverne : l’horloge, les couleurs, les familles et le coffre-fort.</p>
 
-      <Field label="Heure de bascule de la journée">
+      <section className={panel}>
+      <SectionTitle>🌙 Rythme et apparence</SectionTitle>
+      <div className="pt-3"><Field label="Heure de bascule de la journée">
         <select className={`${inputClass} max-w-40`} value={profile.day_rollover_hour} onChange={(e) => save('profile', { ...profile, day_rollover_hour: Number(e.target.value) })}>
           {Array.from({ length: 13 }, (_, h) => <option key={h} value={h}>{h} h</option>)}
         </select>
-      </Field>
-      <div className="pt-5"><ThemeSetting /></div>
+      </Field></div>
+      <div className="pt-4"><ThemeSetting /></div>
+      </section>
 
-      <h2 className="pt-8 pb-3 font-display text-lg">Familles</h2>
-      {notice && <p role="alert" className="pb-2 text-sm text-warn">{notice}</p>}
+      <section className={panel}>
+      <SectionTitle>🏷️ Familles de compétences</SectionTitle>
+      <p className="pt-1 pb-2 text-[13px] font-semibold text-muted">Chaque famille a sa couleur et sa caractéristique : c’est ce qui fait grimper tes stats de héros.</p>
+      {notice && <p role="alert" className="pb-2 text-sm font-bold text-warn">{notice}</p>}
       <div>
         {families.map((f, i) => (
-          <div key={f.id} className="flex flex-wrap items-center gap-2 border-t border-line py-2">
-            <input type="color" aria-label={`Couleur de ${f.name}`} defaultValue={f.color} onBlur={(e) => save('families', { ...f, color: e.target.value })} className="size-11 flex-none rounded-lg bg-transparent" />
+          <div key={f.id} className="flex flex-wrap items-center gap-2 border-t-2 border-dashed border-line py-2 first:border-t-0">
+            <input type="color" aria-label={`Couleur de ${f.name}`} defaultValue={f.color} onBlur={(e) => save('families', { ...f, color: e.target.value })} className="size-11 flex-none rounded-xl border-2 border-outline bg-transparent" />
             <input aria-label="Nom de la famille" className={`${inputClass} min-w-36 flex-1 !w-auto`} defaultValue={f.name} onBlur={(e) => e.target.value.trim() && save('families', { ...f, name: e.target.value.trim() })} />
             <input aria-label={`Caractéristique de ${f.name}`} className={`${inputClass} min-w-28 flex-1 !w-auto`} defaultValue={f.stat_name} onBlur={(e) => e.target.value.trim() && save('families', { ...f, stat_name: e.target.value.trim() })} />
-            <div className="flex text-muted">
-              <button type="button" aria-label={`Monter ${f.name}`} disabled={i === 0} className="size-11 disabled:opacity-30" onClick={() => move(i, -1)}>↑</button>
-              <button type="button" aria-label={`Descendre ${f.name}`} disabled={i === families.length - 1} className="size-11 disabled:opacity-30" onClick={() => move(i, 1)}>↓</button>
-              <button type="button" className="min-h-11 px-2 text-[13px]" onClick={() => tryRemove(f)}>Supprimer</button>
+            <div className="flex gap-1.5">
+              <button type="button" aria-label={`Monter ${f.name}`} disabled={i === 0} className={`${small} size-11`} onClick={() => move(i, -1)}>↑</button>
+              <button type="button" aria-label={`Descendre ${f.name}`} disabled={i === families.length - 1} className={`${small} size-11`} onClick={() => move(i, 1)}>↓</button>
+              <button type="button" className={`${small} px-3 text-[13px]`} onClick={() => tryRemove(f)}>Supprimer</button>
             </div>
           </div>
         ))}
       </div>
-      <form onSubmit={add} className="flex flex-wrap gap-2 border-t border-line pt-3">
+      <form onSubmit={add} className="flex flex-wrap gap-2 border-t-2 border-dashed border-line pt-3">
         <input className={`${inputClass} min-w-36 flex-1 !w-auto`} placeholder="Nouvelle famille" aria-label="Nom de la nouvelle famille" value={name} onChange={(e) => setName(e.target.value)} />
         <input className={`${inputClass} min-w-28 flex-1 !w-auto`} placeholder="Caractéristique" aria-label="Caractéristique de la nouvelle famille" value={stat} onChange={(e) => setStat(e.target.value)} />
         <Button type="submit">Ajouter</Button>
       </form>
 
-      <ReminderSetting />
-      <XpSetting />
-      <ExportSetting />
+      </section>
+
+      <div className={panel}><ReminderSetting /></div>
+      <div className={panel}><XpSetting /></div>
+      <div className={panel}><ExportSetting /></div>
       {!isSandbox && <CopyFromSuivapp />}
       <SimulationPanel />
 

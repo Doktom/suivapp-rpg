@@ -24,7 +24,7 @@ function stepFor(habit: Habit) {
 }
 
 const chip = (active: boolean) =>
-  `min-h-9 rounded-full border-2 border-outline px-3 text-[13px] font-extrabold ${active ? 'bg-teal text-onsticker' : 'bg-surface text-ink'}`
+  `min-h-11 rounded-full border-2 border-outline px-3 text-[13px] font-extrabold ${active ? 'bg-teal text-onsticker' : 'bg-surface text-ink'}`
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`
 
@@ -59,7 +59,7 @@ function RoutineInput({ habit, done, onChange }: { habit: Habit; done: string[];
       )}
       <div className="flex flex-wrap gap-1.5">
         {habit.steps.map((step) => (
-          <button key={step.id} type="button" aria-pressed={done.includes(step.id)} onClick={() => toggle(step.id)} className={`min-h-9 rounded-lg border-2 px-2.5 text-[13px] font-bold ${done.includes(step.id) ? 'border-outline bg-teal text-onsticker line-through' : 'border-line bg-surface'}`}>
+          <button key={step.id} type="button" aria-pressed={done.includes(step.id)} onClick={() => toggle(step.id)} className={`min-h-11 rounded-lg border-2 px-2.5 text-[13px] font-bold ${done.includes(step.id) ? 'border-outline bg-teal text-onsticker line-through' : 'border-line bg-surface'}`}>
             {step.name}
           </button>
         ))}
@@ -138,8 +138,8 @@ export function HabitRow({ habit, moment, day, showMoment }: { habit: Habit; mom
       {habit.tracking === 'routine' && <RoutineInput habit={habit} done={validation?.steps ?? []} onChange={(steps) => setRoutineSteps(habit, day, moment, steps)} />}
       {habit.tracking === 'avoid' && (
         <div className="flex flex-wrap gap-1.5 pt-1 pb-1.5 pl-[52px]">
-          <Button className="!min-h-9 text-[13px]" onClick={() => addSlip(habit, day)}>Noter un écart</Button>
-          {anySlip && <Button className="!min-h-9 text-[13px]" onClick={() => removeSlip(habit, day)}>Retirer un écart</Button>}
+          <Button className="!min-h-11 text-[13px]" onClick={() => addSlip(habit, day)}>Noter un écart</Button>
+          {anySlip && <Button className="!min-h-11 text-[13px]" onClick={() => removeSlip(habit, day)}>Retirer un écart</Button>}
         </div>
       )}
     </div>

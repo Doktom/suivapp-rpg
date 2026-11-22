@@ -1,11 +1,13 @@
 // Suivapp RPG service worker: lets the app open offline once visited, and shows reminders.
-const CACHE = 'suivapp-rpg-v1'
+// Caches are shared by every app on this domain (Suivapp too): only ever touch our own.
+const PREFIX = 'suivapp-rpg-'
+const CACHE = `${PREFIX}v2`
 
 self.addEventListener('install', () => self.skipWaiting())
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith(PREFIX) && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
   )
 })
 
