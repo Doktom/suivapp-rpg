@@ -2,11 +2,13 @@
  * Suivapp (the sober version) and Suivapp RPG are served from the same domain, so this app can read the
  * other one's browser storage. The copy is one-way: Suivapp's keys are only read, never written.
  */
+import { DEVICE_KEYS } from '../data/sandbox'
+
 export const SOURCE_PREFIX = 'suivapp:'
 export const TARGET_PREFIX = 'suivapp-rpg:'
 
 /** Per-device preferences and work in progress stay where they are. */
-const SKIPPED = ['theme', 'reminders', 'reminders-sent', 'training-draft', 'mobility-draft']
+const SKIPPED = DEVICE_KEYS
 
 /** Which keys to copy, and where to: every Suivapp table, renamed with this app's prefix. */
 export function planCopy(keys: string[]): { from: string; to: string }[] {

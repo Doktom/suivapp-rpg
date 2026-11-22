@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Button, ChipTabs, Dialog, Field, inputClass, ProgressBar, SectionTitle, Sticker } from '../components/ui'
+import { simNow } from '../data/sandbox'
 import { useStore } from '../data/store'
 import { addDays, formatShortDay, mondayOf } from '../domain/date'
 import { unlockSound } from './chrono'
@@ -34,7 +35,7 @@ const WEEKS_SHOWN = 8
 function startDraft(session: TrainingSession, logs: TrainingLog[]): Draft {
   return {
     session_id: session.id,
-    started_at: new Date().toISOString(),
+    started_at: simNow().toISOString(),
     sets: draftSets(session, logs),
     warmup_done: false,
     circuits: {},

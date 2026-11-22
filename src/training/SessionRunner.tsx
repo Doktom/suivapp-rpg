@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, CheckButton, inputClass, ProgressBar, Sticker } from '../components/ui'
+import { PREFIX } from '../data/sandbox'
 import { monsterFor, monsterHp, monstersDefeated, WINGS } from '../rpg/dungeon'
 import { useStore } from '../data/store'
 import { beep, useTick, useWakeLock } from './chrono'
@@ -23,7 +24,7 @@ export interface Draft {
   rest_end: number | null
 }
 
-const DRAFT_KEY = 'suivapp-rpg:training-draft'
+const DRAFT_KEY = `${PREFIX}training-draft`
 
 export function readDraft(): Draft | null {
   try {

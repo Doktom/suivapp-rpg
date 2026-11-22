@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { ExportSetting, ReminderSetting, ThemeSetting, XpSetting } from '../components/SettingsExtras'
 import { CopyFromSuivapp } from '../rpg/CopyFromSuivapp'
+import { SimulationPanel } from '../rpg/SimulationPanel'
+import { isSandbox } from '../data/sandbox'
 import { Button, Field, inputClass } from '../components/ui'
 import { supabase } from '../data/repo'
 import { useStore } from '../data/store'
@@ -76,7 +78,8 @@ export function Settings() {
       <ReminderSetting />
       <XpSetting />
       <ExportSetting />
-      <CopyFromSuivapp />
+      {!isSandbox && <CopyFromSuivapp />}
+      <SimulationPanel />
 
       {supabase && <Button className="mt-8" onClick={() => supabase!.auth.signOut()}>Se déconnecter</Button>}
     </div>

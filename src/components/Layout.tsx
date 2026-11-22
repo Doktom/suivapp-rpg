@@ -1,6 +1,8 @@
 import { useEffect, type ReactNode } from 'react'
 import { isDemo } from '../data/repo'
-import { useUndo } from '../data/store'
+import { isSandbox } from '../data/sandbox'
+import { useStore, useUndo } from '../data/store'
+import { formatLongDay } from '../domain/date'
 import { Celebration } from '../rpg/Celebration'
 import { HeroAvatar, useHero } from '../rpg/Hero'
 
@@ -19,6 +21,16 @@ const NAV: [Route, string, string][] = [
 
 /** How long the "Annuler" banner stays. */
 const UNDO_MS = 6000
+
+/** Reminds that the data on screen is invented, and where to leave. */
+function SandboxBanner() {
+  const { today } = useStore()
+  return (
+    <p role="status" className="border-b-2 border-outline bg-lilac px-4 py-2 text-center text-xs font-extrabold text-onsticker">
+      🧪 Bac à sable : {formatLongDay(today)}. Rien de réel ici. <a href="#settings" className="underline">Machine à voyager dans le temps</a>
+    </p>
+  )
+}
 
 function UndoBanner() {
   const { entry, undo, dismiss } = useUndo()
@@ -74,7 +86,8 @@ export function Layout({ route, error, children }: { route: Route; error: string
       </nav>
 
       <div className="min-w-0 flex-1 pb-28 lg:pb-8">
-        {isDemo && <p className="border-b-2 border-outline bg-chip px-5 py-2 text-center text-xs text-ink">Version de test : les données restent dans ce navigateur (Réglages → Exporter mes données pour les sauvegarder).</p>}
+        {isSandbox && <SandboxBanner />}
+        {isDemo && !isSandbox && <p className="border-b-2 border-outline bg-chip px-5 py-2 text-center text-xs text-ink">Version de test : les données restent dans ce navigateur (Réglages → Exporter mes données pour les sauvegarder).</p>}
         {error && <p role="alert" className="bg-warn px-5 py-2 text-center text-sm text-onaccent">{error}</p>}
         <div className="flex items-center justify-between gap-2 px-4 pt-2 lg:hidden">
           <HeroBadge />

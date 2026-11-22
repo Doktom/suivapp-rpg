@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { isSandbox } from '../data/sandbox'
 import { dueSlot, markSent, readReminders, reminderText, showNotification } from '../data/reminders'
 import { useStore, useToday, useValidationIndex } from '../data/store'
 import { clockTime } from '../domain/date'
@@ -12,7 +13,8 @@ export function ReminderRunner() {
   const index = useValidationIndex()
 
   useEffect(() => {
-    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+    // Invented time must not wake the real phone.
+    if (isSandbox || typeof Notification === 'undefined' || Notification.permission !== 'granted') return
     const settings = readReminders()
     const clock = clockTime(now)
     const slot = dueSlot(settings, clock, today)

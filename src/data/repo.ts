@@ -20,11 +20,15 @@ export type Table =
   | 'dance_sessions'
   | 'dance_figures'
   | 'dance_goals'
+import { PREFIX } from './sandbox'
+
 export type Row = { id: string }
 
 export interface Repo {
   list<T extends Row>(table: Table): Promise<T[]>
   upsert(table: Table, row: Row): Promise<void>
+  /** Several rows at once (a simulation writes hundreds). */
+  upsertMany(table: Table, rows: Row[]): Promise<void>
   remove(table: Table, id: string): Promise<void>
   /** Delete every row whose `column` equals `value`. */
   removeWhere(table: Table, column: string, value: string): Promise<void>
@@ -46,6 +50,10 @@ const supabaseRepo = (client: NonNullable<typeof supabase>): Repo => ({
     const { error } = await client.from(table).upsert(row)
     if (error) throw error
   },
+  async upsertMany(table, rows) {
+    const { error } = await client.from(table).upsert(rows)
+    if (error) throw error
+  },
   async remove(table, id) {
     const { error } = await client.from(table).delete().eq('id', id)
     if (error) throw error
@@ -56,7 +64,7 @@ const supabaseRepo = (client: NonNullable<typeof supabase>): Repo => ({
   },
 })
 
-const storageKey = (table: Table) => `suivapp-rpg:${table}`
+const storageKey = (table: Table) => `${PREFIX}${table}`
 const read = (table: Table): Row[] => JSON.parse(localStorage.getItem(storageKey(table)) ?? '[]')
 const write = (table: Table, rows: Row[]) => localStorage.setItem(storageKey(table), JSON.stringify(rows))
 
@@ -66,6 +74,10 @@ const localRepo: Repo = {
   },
   async upsert(table, row) {
     write(table, [...read(table).filter((r) => r.id !== row.id), row])
+  },
+  async upsertMany(table, rows) {
+    const ids = new Set(rows.map((r) => r.id))
+    write(table, [...read(table).filter((r) => !ids.has(r.id)), ...rows])
   },
   async remove(table, id) {
     write(table, read(table).filter((r) => r.id !== id))

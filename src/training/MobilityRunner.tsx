@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button, CheckButton, ProgressBar, RingTimer } from '../components/ui'
+import { PREFIX, simNow } from '../data/sandbox'
 import { WINGS } from '../rpg/dungeon'
 import { useStore } from '../data/store'
 import { beep, useTick, useWakeLock } from './chrono'
@@ -22,7 +23,7 @@ export interface MobilityDraft {
   done: boolean[]
 }
 
-const KEY = 'suivapp-rpg:mobility-draft'
+const KEY = `${PREFIX}mobility-draft`
 
 export function readMobilityDraft(): MobilityDraft | null {
   try {
@@ -50,7 +51,7 @@ function enter(step: MobilityStep | undefined, now: number): Pick<MobilityDraft,
 
 export function startMobility(session: TrainingSession, level: number | null): MobilityDraft {
   const steps = mobilitySteps(session, level)
-  return { session_id: session.id, level, started_at: new Date().toISOString(), mode: 'guided', step: 0, ...enter(steps[0], Date.now()), done: steps.map(() => false) }
+  return { session_id: session.id, level, started_at: simNow().toISOString(), mode: 'guided', step: 0, ...enter(steps[0], Date.now()), done: steps.map(() => false) }
 }
 
 const LILAC = 'var(--color-lilac)'

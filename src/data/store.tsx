@@ -27,6 +27,7 @@ import { badgesXp, computeBadges, type Badge, type TrainingGoal } from '../train
 import type { DanceClass, DanceFigure, DanceGoal, DanceSession } from '../training/dance'
 import type { Exercise, TrainingLog, TrainingSession, Wod } from '../training/types'
 import { repo, type Row, type Table } from './repo'
+import { simNow } from './sandbox'
 
 export interface Data {
   families: Family[]
@@ -104,7 +105,7 @@ interface UndoEntry {
 function useStoreValue() {
   const [data, setData] = useState<Data | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [now, setNow] = useState(() => new Date())
+  const [now, setNow] = useState(() => simNow())
   const [undoEntry, setUndoEntry] = useState<UndoEntry | null>(null)
   // Writes run one after another so that a row always reaches the server after its parents.
   const queue = useRef(Promise.resolve())
@@ -112,7 +113,7 @@ function useStoreValue() {
   const recorder = useRef<Map<string, UndoEntry['ops'][number]> | null>(null)
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60_000)
+    const timer = setInterval(() => setNow(simNow()), 60_000)
     return () => clearInterval(timer)
   }, [])
 
@@ -140,6 +141,17 @@ function useStoreValue() {
     })
     enqueue(() => repo.upsert(table, row))
   }
+
+  /** Writes many rows in one go (the simulation adds hundreds). Not undoable. */
+  const saveMany = <K extends Table>(table: K, rows: Data[K][number][]) => {
+    if (rows.length === 0) return
+    const ids = new Set(rows.map((r) => r.id))
+    setData((d) => d && { ...d, [table]: [...(d[table] as Row[]).filter((r) => !ids.has(r.id)), ...rows] })
+    enqueue(() => repo.upsertMany(table, rows))
+  }
+
+  /** Re-reads the clock after the sandbox has moved it. */
+  const refreshClock = () => setNow(simNow())
 
   const remove = (table: Table, id: string) => {
     record(table, id)
@@ -351,7 +363,7 @@ function useStoreValue() {
     track(`${task.title} : ${completing ? 'terminée' : 'rouverte'}`, () => {
       const updated: Task = {
         ...task,
-        completed_at: completing ? new Date().toISOString() : null,
+        completed_at: completing ? simNow().toISOString() : null,
         xp_earned: completing ? (task.parent_id ? xp.subtask : taskXp(task.priority, xp)) : 0,
       }
       save('tasks', updated)
@@ -365,7 +377,7 @@ function useStoreValue() {
       const siblings = data.tasks.filter((t) => t.parent_id === parent.id).map((t) => (t.id === task.id ? updated : t))
       const allDone = siblings.every((t) => t.completed_at !== null)
       if (allDone === (parent.completed_at !== null)) return
-      const block: Task = { ...parent, completed_at: allDone ? new Date().toISOString() : null, xp_earned: allDone ? xp.block_bonus : 0 }
+      const block: Task = { ...parent, completed_at: allDone ? simNow().toISOString() : null, xp_earned: allDone ? xp.block_bonus : 0 }
       save('tasks', block)
       if (allDone) completeTop(block)
       else reopenTop(block)
@@ -435,6 +447,8 @@ function useStoreValue() {
     dismissUndo: () => setUndoEntry(null),
     track,
     save,
+    saveMany,
+    refreshClock,
     remove,
     setValidation,
     setRoutineSteps,
